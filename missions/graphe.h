@@ -7,9 +7,8 @@
 
 typedef struct {
     int state;        // 0, 1, 2
-    int traffic;      // 0 or 1
-    float weight;     // weight of the road 
-    int road_capacity;
+    float weight;     
+    int road_capacity; // depends of the weight
 } Road;
 
 typedef struct {
