@@ -31,30 +31,23 @@ int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int
     }
     *num_vertices = n;  
 
-    for (i = 0; i < *num_vertices; i++) {
-        for (j = 0; j < *num_vertices; j++) {
-            matrix[i][j].weight = 0.0f;
-            matrix[i][j].state = 0;
-        }
-    }
-
-    for (i = 0; i < *num_vertices; i++) {
-        for (j = 0; j < *num_vertices; j++) {
+    for (int i = 0; i < *num_vertices; i++) {
+        for (int j = 0; j < *num_vertices; j++) {
             if (fscanf(file, "%f", &matrix[i][j].weight) != 1) {
                 perror("Error reading the matrix values");
                 fclose(file);
                 return 0;  
             }
-            matrix[i][j].road_capacity = matrix[i][j].weight / 2;
+            matrix[i][j].state = 0; // Initialization, will be changed after
         }
     }
 
     printf("Adjacency matrix (%d x %d):\n", *num_vertices, *num_vertices);
-        for (int i = 0; i < *num_vertices; i++) {
-            for (int j = 0; j < *num_vertices; j++) {
-                printf("%.0f ", matrix[i][j].weight);
-            }
-            printf("\n");
+    for (i = 0; i < *num_vertices; i++) {
+        for (j = 0; j < *num_vertices; j++) {
+            printf("%.0f ", matrix[i][j].weight);
+        }
+        printf("\n");
     }
     printf("\n");
 

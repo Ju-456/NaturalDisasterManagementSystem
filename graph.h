@@ -26,7 +26,7 @@ typedef struct {
 typedef struct {
     int start;         // start
     int end;           // end
-    int state;         // 0: bad, 1: good, 2: very
+    int state;         // 1: bad, 2: good, 3: very
     float weight;      // from the Adj matrix file
     int road_capacity; // road_capacity = weight/2
 } Road;
@@ -53,5 +53,8 @@ void init_roads_characteristics(Road matrix[][100], int num_vertices);
 int display_roads_state_matrix(Road matrix[][100], int num_vertices);
 char *get_type_name(int type);
 void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads);
+
+// Earthsquake's part
+int earthquake (int num_vertices, Road matrix[][100]);
 
 #endif

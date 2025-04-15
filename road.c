@@ -24,8 +24,10 @@ void init_roads_characteristics(Road matrix[][100], int num_vertices) {
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
             if (matrix[i][j].weight > 0) {
-                matrix[i][j].state = (rand() % 2) + 1; // 1 ou 2
+                matrix[i][j].road_capacity = matrix[i][j].weight / 2; 
+                matrix[i][j].state = (rand() % 2) + 2; // 2 or 3
             } else {
+                matrix[i][j].road_capacity = 0;
                 matrix[i][j].state = 0;
             }
         }
@@ -48,7 +50,7 @@ char *get_type_name(int type) {
         case 0: return "city";
         case 1: return "hospital";
         case 2: return "warehouse";
-        default: return "unknown";  // En cas d'erreur
+        default: return "unknown";  // In case of error
     }
 }
 
