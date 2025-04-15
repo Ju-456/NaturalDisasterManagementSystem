@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c11
 
 # Files
-SRCS = main.c vertex.c general.c
+SRCS = main.c vertex.c road.c general.c
 OBJS = $(SRCS:.c=.o)
 EXEC = graph
 

@@ -24,8 +24,10 @@ typedef struct {
 } Vertex;
 
 typedef struct {
-    int state;        // 0, 1, 2
-    float weight;     // from the Adj matrix file
+    int start;         // start
+    int end;           // end
+    int state;         // 0: bad, 1: good, 2: very
+    float weight;      // from the Adj matrix file
     int road_capacity; // road_capacity = weight/2
 } Road;
 
@@ -39,10 +41,17 @@ typedef struct {
 void build_path(char *full_path);  
 int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices);
 
-// vertex's part
+// Vertex's part
 void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices);
 void sort_vertices(Vertex vertices[], int num_vertices);
 void init_vertex_characteristics(Vertex vertices[], Road matrix[][100], int num_vertices);
 void display_vertex_characteristics(Vertex vertices[], int num_vertices);
+
+// Goad's part
+int count_roads(Road roads[], Road matrix[][100], int num_vertices);
+void init_roads_characteristics(Road matrix[][100], int num_vertices);
+int display_roads_state_matrix(Road matrix[][100], int num_vertices);
+char *get_type_name(int type);
+void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads);
 
 #endif

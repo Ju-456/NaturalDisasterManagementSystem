@@ -10,7 +10,7 @@ void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices
         vertices[i].id[1] = '\0';
         vertices[i].degree = 0;
         for (int j = 0; j < num_vertices; j++) {
-            if (matrix[i][j].weight > 0.0f) {
+            if (matrix[i][j].weight > 0) {
                 vertices[i].degree++;
             }
         }
@@ -24,7 +24,6 @@ void sort_vertices(Vertex vertices[], int num_vertices) {
             // Sort by degree first, then by id lexicographically
             if (vertices[i].degree < vertices[j].degree || 
                 (vertices[i].degree == vertices[j].degree && strcmp(vertices[i].id, vertices[j].id) > 0)) {
-                // Swap vertices[i] and vertices[j]
                 Vertex temp = vertices[i];
                 vertices[i] = vertices[j];
                 vertices[j] = temp;
@@ -104,7 +103,8 @@ void display_vertex_characteristics(Vertex vertices[], int num_vertices) {
             printf("other resources\n");
         }
 
-        printf("storage capacity: %d kgs\n\n", vertices[i].storage_capacity);
+        printf("storage capacity: %d kgs\n", vertices[i].storage_capacity);
+        printf("----------------------------------\n");
     }
 }
 

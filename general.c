@@ -3,7 +3,7 @@
 
 #include "graph.h"
 
-// finding user path and build to access to graph1.txtx
+// finding user path and build to access to graph1.txt
 void build_path(char *full_path) {
     char current_directory[PATH_MAX];
     const char *base_folder = "MatAdj_txt";
