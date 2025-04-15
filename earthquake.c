@@ -7,11 +7,8 @@ int earthquake (int num_vertices, Road matrix[][100]){
     srand(time(NULL)); 
     printf("Be careful !!! EARTHQUAKE : ");
 
-    //int localisation_NS = rand() % 2; // North = 0, South = 1
-    //int localisation_EW = rand() % 2; // East = 0, West = 1
-
-    int localisation_NS = 0;
-    int localisation_EW = 1;
+    int localisation_NS = rand() % 2; // North = 0, South = 1
+    int localisation_EW = rand() % 2; // East = 0, West = 1
 
     int middle_of_matrix = num_vertices / 2;
 
