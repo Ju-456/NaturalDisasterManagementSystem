@@ -3,14 +3,15 @@
 
 #include "graph.h"
 
-// finding user path and build to access to graph1.txt
 void build_path(char *full_path) {
-    char current_directory[PATH_MAX];
-    const char *base_folder = "MatAdj_txt";
+    const char *home = getenv("HOME");  // récupère /home/ju456
+    const char *base_path = "/NaturalDisasterManagementSystem/MatAdj_txt/";
 
-    if (getcwd(current_directory, PATH_MAX) != NULL) {
-        snprintf(full_path, 512, "%s/%s/%s", current_directory, base_folder, FILENAME);
+    if (home != NULL) {
+        snprintf(full_path, PATH_MAX, "%s%s%s", home, base_path, FILENAME);
         printf(" Full path to file: %s\n", full_path);  // pour debug
+    } else {
+        fprintf(stderr, "Could not determine home directory\n");
     }
 }
 
