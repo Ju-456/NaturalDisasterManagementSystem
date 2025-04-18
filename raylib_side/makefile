@@ -1,13 +1,13 @@
 # Compiler et linkeuse
 CC = gcc
-CFLAGS = -Wall -I./ -I/home/ju456/raylib/src
-LDFLAGS = -L/home/ju456/raylib/src -lraylib -lm -lpthread -ldl -lX11
+CFLAGS = -Wall -I./ -I/home/ju456/raylib/src # don't forget to adapt to your own path !!!
+LDFLAGS = -L/home/ju456/raylib/src -lraylib -lm -lpthread -ldl -lX11 # don't forget to adapt to your own path !!!
 
 # Fichiers source
 SRCS = assets_gestion.c main.c
 
 # Nom de l'exécutable
-TARGET = assets
+TARGET = raylib
 
 # Règle par défaut (compilation de l'exécutable)
 all: $(TARGET)
