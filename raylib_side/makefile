@@ -4,7 +4,7 @@ CFLAGS = -Wall -I./ -I/home/ju456/raylib/src # don't forget to adapt to your own
 LDFLAGS = -L/home/ju456/raylib/src -lraylib -lm -lpthread -ldl -lX11 # don't forget to adapt to your own path !!!
 
 # Fichiers source
-SRCS = assets_gestion.c main.c
+SRCS = assets_gestion.c main.c window.c
 
 # Nom de l'exécutable
 TARGET = raylib
