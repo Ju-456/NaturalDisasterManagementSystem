@@ -4,7 +4,7 @@
 #include "graph.h"
 
 void build_path(char *full_path) {
-    const char *home = getenv("HOME");  // récupère /home/ju456
+    const char *home = getenv("HOME");  // recuperation of user name
     const char *base_path = "/NaturalDisasterManagementSystem/MatAdj_txt/";
 
     if (home != NULL) {

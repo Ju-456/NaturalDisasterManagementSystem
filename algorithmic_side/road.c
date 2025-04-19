@@ -60,7 +60,7 @@ void display_roads_characteristics(Vertex vertices[], Road roads[], int num_road
         int i = roads[k].start;
         int j = roads[k].end;
 
-        printf("Road %d: %c -> %c\n", k + 1, 'A' + i, 'A' + j);
+        printf("Road %d: %s -> %s\n", k + 1, vertices[i].id, vertices[j].id); // to skip special character
         printf("Type: (%s -> %s)\n", get_type_name(vertices[i].type), get_type_name(vertices[j].type));
         printf("State: %d\n", roads[k].state);
         printf("Weight: %.0f\n", roads[k].weight);

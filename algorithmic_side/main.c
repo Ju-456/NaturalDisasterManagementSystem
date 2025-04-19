@@ -11,7 +11,7 @@ int main() {
 
     char full_path[PATH_MAX];
     build_path(full_path);
-
+    
     if (load_adjacency_matrix(matrix, full_path, &num_vertices)) {
 
         // Vertex's part

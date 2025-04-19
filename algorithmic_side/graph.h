@@ -10,6 +10,7 @@
 #include <time.h>
 #include <unistd.h>  
 #include <limits.h> 
+#include <ctype.h>
 
 #ifndef PATH_MAX
 #define PATH_MAX 4096 
@@ -42,12 +43,13 @@ void build_path(char *full_path);
 int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices);
 
 // Vertex's part
+void generate_vertex_id(int index, char* id_out);
 void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices);
 void sort_vertices(Vertex vertices[], int num_vertices);
 void init_vertex_characteristics(Vertex vertices[], Road matrix[][100], int num_vertices);
 void display_vertex_characteristics(Vertex vertices[], int num_vertices);
 
-// Goad's part
+// Road's part
 int count_roads(Road roads[], Road matrix[][100], int num_vertices);
 void init_roads_characteristics(Road matrix[][100], int num_vertices);
 int display_roads_state_matrix(Road matrix[][100], int num_vertices);
