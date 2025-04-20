@@ -24,6 +24,7 @@ typedef struct
     char from[3];
     char to[3];
     float weight;
+    int type;
 } Edge;
 
 static Node nodes[100];
@@ -152,6 +153,45 @@ void DrawStraightRoads() {
     }
 }
 
+void DrawVertices() {
+    for (int i = 0; i < node_count; i++) {
+        Node *node = &nodes[i];
+        Vector2 pos = { node->x - 15, node->y - 35 }; // positioning + top and + left, esthetism
+        
+        Rectangle src;
+
+        // test per default the display of the buildings
+        switch (node->id[0]) { 
+            case 'A': // City (A pour exemple)
+                src = (Rectangle){64, 64, 64, 63};  // City
+                break;
+            case 'B': // Hospital (B pour exemple)
+                src = (Rectangle){287, 64, 64, 63}; // Hospital
+                break;
+            case 'C': // Warehouse (C pour exemple)
+                src = (Rectangle){416, 64, 64, 63};   // Warehouse
+                break;
+            default:
+                src = (Rectangle){0, 0, 32, 32}; // Fallback si aucun type trouvé
+                break;
+        }
+
+        // scale factor for the building's size
+        float scale_factor = 0.8f;
+
+        Rectangle dest = {
+            pos.x,
+            pos.y,
+            src.width * scale_factor,  
+            src.height * scale_factor  
+        };
+
+        DrawTexturePro(road_texture, src, dest, (Vector2){0, 0}, 0.0f, WHITE);
+
+        DrawText(node->id, pos.x + 5, pos.y - 10, 10, BLACK); // to see the other nodes who still don't have building
+    }
+}
+
 void InitWindowCustom() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Graph Visualizer");
     SetTargetFPS(60);
@@ -169,12 +209,13 @@ void InitWindowCustom() {
         ClearBackground((Color){0x37, 0x94, 0x6e, 255});
 
         DrawStraightRoads();
-
+        DrawVertices();
+        /*
         for (int i = 0; i < node_count; i++) {
             DrawCircle((int)nodes[i].x, (int)nodes[i].y, 10, DARKBLUE);
             DrawText(nodes[i].id, nodes[i].x + 5, nodes[i].y - 5, 10, WHITE);
         }
-
+*/
         EndDrawing();
     }
 
