@@ -1,10 +1,9 @@
-# Compiler et linkeuse
 CC = gcc
-CFLAGS = -Wall -I./ -I/home/ju456/raylib/src # don't forget to adapt to your own path !!!
-LDFLAGS = -L/home/ju456/raylib/src -lraylib -lm -lpthread -ldl -lX11 # don't forget to adapt to your own path !!!
+CFLAGS = -Wall -I./ -I/home/ju456/raylib/src # Inclut le chemin des en-têtes de raylib
+LDFLAGS = -L/home/ju456/raylib/lib -lraylib -lm -lpthread -ldl -lX11 # Chemin vers la bibliothèque raylib
 
 # Fichiers source
-SRCS = assets_gestion.c main.c window.c
+SRCS = assets_gestion.c main.c window.c parson.c
 
 # Nom de l'exécutable
 TARGET = raylib
