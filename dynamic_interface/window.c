@@ -97,19 +97,19 @@ void draw_vertices_with_type(int num_vertices, Vertex *vertices) {
         
         Rectangle src;
 
-        // test per default the display of the buildings
-        switch (vertex->id[0]) { 
-            case 'A': // City (A pour exemple)
-                src = (Rectangle){64, 64, 64, 63};  // City
+        switch (vertex->type) {
+            case 0: // City
+                // src = (Rectangle){64, 64, 64, 63}; 
+                src = (Rectangle){352, 63, 64, 63}; // To add diverty of colors in the map
                 break;
-            case 'B': // Hospital (B pour exemple)
-                src = (Rectangle){287, 64, 64, 63}; // Hospital
+            case 1: // Hospital
+                src = (Rectangle){287, 64, 64, 63}; 
                 break;
-            case 'C': // Warehouse (C pour exemple)
-                src = (Rectangle){416, 64, 64, 63};   // Warehouse
+            case 2: // Warehouse
+                src = (Rectangle){416, 64, 64, 63}; 
                 break;
             default:
-                src = (Rectangle){0, 0, 32, 32}; // Fallback si aucun type trouvé
+                src = (Rectangle){0, 0, 32, 32}; // Texture fallback par défaut
                 break;
         }
 
@@ -134,9 +134,15 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     SetTargetFPS(60);
 
     road_texture = LoadTexture("City_Tilemap/City_Transparent.png");
-    printf("Texture ID: %d\n", road_texture.id);
+    // printf("Texture ID: %d\n", road_texture.id);
     if (road_texture.id == 0) {
         printf("Erreur de chargement de la texture de route.\n");
+        return;
+    }
+
+    Texture2D grass_texture = LoadTexture("City_Tilemap/grass_texture.jpg");
+    if (grass_texture.id == 0) {
+        printf("Erreur de chargement de la texture de fond.\n");
         return;
     }
 
@@ -144,7 +150,14 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground((Color){0x37, 0x94, 0x6e, 255});
+        // ClearBackground((Color){0x37, 0x94, 0x6e, 255});
+        // DrawTexture(grass_texture, 0, 0, WHITE);
+
+        for (int x = 0; x < SCREEN_WIDTH; x += grass_texture.width) {
+            for (int y = 0; y < SCREEN_HEIGHT; y += grass_texture.height) {
+                DrawTexture(grass_texture, x, y, WHITE);
+            }
+        }        
 
         draw_roads_with_orientation(num_vertices, vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, vertices);
