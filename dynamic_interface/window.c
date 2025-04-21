@@ -129,12 +129,12 @@ void draw_vertices_with_type(int num_vertices, Vertex *vertices) {
     }
 }
 
+// to adapt the screen's size
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Graph Visualizer");
     SetTargetFPS(60);
 
     road_texture = LoadTexture("City_Tilemap/City_Transparent.png");
-    // printf("Texture ID: %d\n", road_texture.id);
     if (road_texture.id == 0) {
         printf("Erreur de chargement de la texture de route.\n");
         return;
@@ -149,24 +149,38 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
 
     while (!WindowShouldClose()) {
-        BeginDrawing();
-        // ClearBackground((Color){0x37, 0x94, 0x6e, 255});
-        // DrawTexture(grass_texture, 0, 0, WHITE);
+        int screen_width = GetScreenWidth();
+        int screen_height = GetScreenHeight();
 
-        for (int x = 0; x < SCREEN_WIDTH; x += grass_texture.width) {
-            for (int y = 0; y < SCREEN_HEIGHT; y += grass_texture.height) {
+        // Scaling isotropique pour garder les proportions correctes (surtout diagonales)
+        float scale = fminf((float)screen_width / SCREEN_WIDTH, (float)screen_height / SCREEN_HEIGHT);
+
+        // Centred the graph in the window
+        float offsetX = (screen_width - SCREEN_WIDTH * scale) / 2.0f;
+        float offsetY = (screen_height - SCREEN_HEIGHT * scale) / 2.0f;
+
+        // temporary copy with adapted values
+        Vertex scaled_vertices[num_vertices];
+        for (int i = 0; i < num_vertices; i++) {
+            scaled_vertices[i] = vertices[i];
+            scaled_vertices[i].x = vertices[i].x * scale + offsetX;
+            scaled_vertices[i].y = vertices[i].y * scale + offsetY;
+        }
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        // the adapted display
+        for (int x = 0; x < screen_width; x += grass_texture.width) {
+            for (int y = 0; y < screen_height; y += grass_texture.height) {
                 DrawTexture(grass_texture, x, y, WHITE);
             }
-        }        
-
-        draw_roads_with_orientation(num_vertices, vertices, roads, num_roads);
-        draw_vertices_with_type(num_vertices, vertices);
-        /*
-        for (int i = 0; i < num_vertices; i++) {
-            DrawCircle((int)vertices[i].x, (int)vertices[i].y, 10, DARKBLUE);
-            DrawText(vertices[i].id, vertices[i].x + 5, vertices[i].y - 5, 10, WHITE);
         }
-*/
+        
+        // To adapt the size if the user click "full screen"
+        draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
+        draw_vertices_with_type(num_vertices, scaled_vertices);
+
         EndDrawing();
     }
 
