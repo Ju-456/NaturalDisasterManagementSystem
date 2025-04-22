@@ -125,28 +125,67 @@ void draw_vertices_with_type(int num_vertices, Vertex *vertices) {
 
         DrawTexturePro(road_texture, src, dest, (Vector2){0, 0}, 0.0f, WHITE);
 
-        DrawText(vertex->id, pos.x + 5, pos.y - 10, 10, BLACK); // to see the other vertices who still don't have building
+        //DrawText(vertex->id, pos.x + 5, pos.y - 10, 10, BLACK); // to see the other vertices who still don't have building
     }
 }
 
-// to adapt the screen's size
+void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_vertices, AppMode *mode, int *selected_index) {
+    if (*selected_index == -1) return;
+
+    Vertex v = vertices[*selected_index];
+    int box_x = 50, box_y = 50, box_w = 300, box_h = 200;
+
+    DrawRectangle(box_x, box_y, box_w, box_h, LIGHTGRAY);
+    DrawRectangleLines(box_x, box_y, box_w, box_h, DARKGRAY);
+
+    DrawText(TextFormat("ID: %s", v.id), box_x + 10, box_y + 10, 20, BLACK);
+
+    const char* type_str = (v.type == 0) ? "City" : (v.type == 1) ? "Hospital" : "Warehouse";
+    DrawText(TextFormat("Type: %s", type_str), box_x + 10, box_y + 40, 20, BLACK);
+    DrawText(TextFormat("Degree: %d", v.degree), box_x + 10, box_y + 70, 20, BLACK);
+
+    const char* storage_str =
+        (v.type == 1) ? ((v.type_of_storage == 0) ? "Food, Meds" : "Meds, Food") :
+        (v.type == 0) ? ((v.type_of_storage == 1) ? "Meds, Other" : "Other, Meds") :
+        "Other";
+
+    DrawText(TextFormat("Storage: %s", storage_str), box_x + 10, box_y + 100, 20, BLACK);
+    DrawText(TextFormat("Capacity: %d kgs", v.storage_capacity), box_x + 10, box_y + 130, 20, BLACK);
+    DrawText("Click outside to close", box_x + 10, box_y + 170, 14, DARKGRAY);
+
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Vector2 mouse = GetMousePosition();
+        if (!(mouse.x > box_x && mouse.x < box_x + box_w && mouse.y > box_y && mouse.y < box_y + box_h)) {
+            *mode = MODE_GRAPH;
+            *selected_index = -1;
+        }
+    }
+}
+
+/*void init_window_road(){
+// work in progress...
+}*/ 
+
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads) {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Graph Visualizer");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
     SetTargetFPS(60);
 
     road_texture = LoadTexture("City_Tilemap/City_Transparent.png");
     if (road_texture.id == 0) {
-        printf("Erreur de chargement de la texture de route.\n");
+        printf("Route texture loading error.\n");
         return;
     }
 
     Texture2D grass_texture = LoadTexture("City_Tilemap/grass_texture.jpg");
     if (grass_texture.id == 0) {
-        printf("Erreur de chargement de la texture de fond.\n");
+        printf("Background texture loading error.\n");
         return;
     }
 
     load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
+
+    AppMode mode = MODE_GRAPH;
+    int selected_index = -1;
 
     while (!WindowShouldClose()) {
         int screen_width = GetScreenWidth();
@@ -181,11 +220,29 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, scaled_vertices);
 
+        // the user didn't click on a vertex
+        if (mode == MODE_GRAPH) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                Vector2 mouse = GetMousePosition();
+                for (int i = 0; i < num_vertices; i++) {
+                    float dx = mouse.x - scaled_vertices[i].x;
+                    float dy = mouse.y - scaled_vertices[i].y;
+                    float distance = sqrtf(dx * dx + dy * dy);
+        
+                    if (distance <= 25.0f) {
+                        selected_index = i;
+                        mode = MODE_VERTEX_DETAILS;
+                        break;
+                    }
+                }
+            }
+            // the user clicked on a vertex
+        } else if (mode == MODE_VERTEX_DETAILS && selected_index != -1) {
+            init_window_vertex(vertices, scaled_vertices, num_vertices, &mode, &selected_index);
+        }        
         EndDrawing();
     }
 
     UnloadTexture(road_texture);
     CloseWindow();
 }
-
-// void init_vertex_window()

@@ -48,6 +48,11 @@ typedef struct {
     int vehicle_capacity;
 } Vehicle;
 
+typedef enum {
+    MODE_GRAPH,
+    MODE_VERTEX_DETAILS
+} AppMode;
+
 #ifndef PATH_MAX
 #define PATH_MAX 4096 
 #endif
@@ -81,6 +86,8 @@ bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[]
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads);
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
 
+void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_vertices, AppMode *mode, int *selected_index);
+//void ini_window_road
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads);
 
 #endif
