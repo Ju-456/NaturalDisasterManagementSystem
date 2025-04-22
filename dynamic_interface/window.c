@@ -187,3 +187,5 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     UnloadTexture(road_texture);
     CloseWindow();
 }
+
+// void init_vertex_window()

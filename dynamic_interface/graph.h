@@ -80,6 +80,7 @@ bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[]
 
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads);
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
+
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads);
 
 #endif

@@ -55,7 +55,9 @@ int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int
 }
 
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads) {
-    build_path(full_path_json, "Graph_json/", FILENAME_JSON);
+    char* strTmp = (char*)malloc(256*sizeof(char));
+    strcpy(strTmp,full_path_json);
+    build_path(strTmp, "Graph_json/", FILENAME_JSON);
 
     JSON_Value *root_val = json_parse_file(full_path_json);
     JSON_Object *root_obj = json_value_get_object(root_val);
