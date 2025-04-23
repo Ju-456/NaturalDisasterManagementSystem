@@ -245,10 +245,10 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
 
         // the user didn't click on a vertex or road
         if (mode == MODE_GRAPH) {
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                Vector2 mouse = GetMousePosition();
+            Vector2 mouse = GetMousePosition();
         
-                // Check vertices first
+            // Right click for vertices
+            if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
                 for (int i = 0; i < num_vertices; i++) {
                     float dx = mouse.x - scaled_vertices[i].x;
                     float dy = mouse.y - scaled_vertices[i].y;
@@ -258,36 +258,37 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
                         mode = MODE_VERTEX_DETAILS;
                     }
                 }
+            }
         
-                // Then check roads
+            // Left click for roads
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 for (int r = 0; r < num_roads; r++) {
                     Vector2 p1 = {scaled_vertices[roads[r].start].x, scaled_vertices[roads[r].start].y};
                     Vector2 p2 = {scaled_vertices[roads[r].end].x, scaled_vertices[roads[r].end].y};
-                    Vector2 m = GetMousePosition();
         
-                    // Projection d'un point sur un segment
                     float dx = p2.x - p1.x;
                     float dy = p2.y - p1.y;
                     float len_sq = dx * dx + dy * dy;
-                    float t = ((m.x - p1.x) * dx + (m.y - p1.y) * dy) / len_sq;
-                    t = fmaxf(0, fminf(1, t)); // clamp t
+                    float t = ((mouse.x - p1.x) * dx + (mouse.y - p1.y) * dy) / len_sq;
+                    t = fmaxf(0, fminf(1, t));
                     float proj_x = p1.x + t * dx;
                     float proj_y = p1.y + t * dy;
         
-                    float dist = sqrtf((m.x - proj_x) * (m.x - proj_x) + (m.y - proj_y) * (m.y - proj_y));
-                    if (dist < 12.0f && len_sq > 1000.0f) { // the tolerance is bigger for the lengh than the width, bc there're roads
+                    float dist = sqrtf((mouse.x - proj_x) * (mouse.x - proj_x) + (mouse.y - proj_y) * (mouse.y - proj_y));
+                    if (dist < 12.0f && len_sq > 1000.0f) {
                         selected_index = r;
                         mode = MODE_ROAD_DETAILS;
                     }
                 }
             }
-        } 
-        else if (mode == MODE_ROAD_DETAILS && selected_index != -1) {
-            init_window_road(vertices, scaled_vertices, roads, num_roads, &mode, &selected_index);
-        } 
+        }
         else if (mode == MODE_VERTEX_DETAILS && selected_index != -1) {
             init_window_vertex(vertices, scaled_vertices, num_vertices, &mode, &selected_index);
-        }     
+        }
+        else if (mode == MODE_ROAD_DETAILS && selected_index != -1) {
+            init_window_road(vertices, scaled_vertices, roads, num_roads, &mode, &selected_index);
+        }
+           
                 
         EndDrawing();
     }
