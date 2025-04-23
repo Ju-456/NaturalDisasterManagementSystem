@@ -150,7 +150,8 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
         "Other";
 
     DrawText(TextFormat("Storage: %s", storage_str), box_x + 10, box_y + 100, 20, BLACK);
-    DrawText(TextFormat("Capacity: %d kgs", v.storage_capacity), box_x + 10, box_y + 130, 20, BLACK);
+    DrawText(TextFormat("Capacity: %d %s", v.storage_capacity, (v.storage_capacity == 1 || v.storage_capacity == 0) ? "kg" : "kgs"), box_x + 10, box_y + 130, 20, BLACK);
+    // DrawText(TextFormat("Capacity: %d kgs", v.storage_capacity), box_x + 10, box_y + 130, 20, BLACK);
     DrawText("Click outside to close", box_x + 10, box_y + 170, 14, DARKGRAY);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -162,9 +163,31 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
     }
 }
 
-/*void init_window_road(){
-// work in progress...
-}*/ 
+void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index) {
+    if (*selected_index == -1) return;
+
+    Road r = roads[*selected_index];
+    int box_x = 50, box_y = 50, box_w = 350, box_h = 180;
+
+    DrawRectangle(box_x, box_y, box_w, box_h, LIGHTGRAY);
+    DrawRectangleLines(box_x, box_y, box_w, box_h, DARKGRAY);
+
+    DrawText(TextFormat("Road: %s -> %s", original_vertices[r.start].id, original_vertices[r.end].id), box_x + 10, box_y + 10, 20, BLACK);
+    DrawText(TextFormat("Type: (%s -> %s)", get_type_name(original_vertices[r.start].type), get_type_name(original_vertices[r.end].type)), box_x + 10, box_y + 40, 20, BLACK);
+    DrawText(TextFormat("State: %d", r.state), box_x + 10, box_y + 70, 20, BLACK);
+    DrawText(TextFormat("Weight: %.0f", r.weight), box_x + 10, box_y + 100, 20, BLACK);
+    DrawText(TextFormat("Capacity: %d %s", r.road_capacity, (r.road_capacity == 1 || r.road_capacity == 0) ? "vehicle" : "vehicles"), box_x + 10, box_y + 130, 20, BLACK);
+    DrawText("Click outside to close", box_x + 10, box_y + 160, 14, DARKGRAY);
+
+    // close the window if the user click outside
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Vector2 mouse = GetMousePosition();
+        if (!(mouse.x > box_x && mouse.x < box_x + box_w && mouse.y > box_y && mouse.y < box_y + box_h)) {
+            *mode = MODE_GRAPH;
+            *selected_index = -1;
+        }
+    }
+}
 
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
@@ -220,26 +243,52 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, scaled_vertices);
 
-        // the user didn't click on a vertex
+        // the user didn't click on a vertex or road
         if (mode == MODE_GRAPH) {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 Vector2 mouse = GetMousePosition();
+        
+                // Check vertices first
                 for (int i = 0; i < num_vertices; i++) {
                     float dx = mouse.x - scaled_vertices[i].x;
                     float dy = mouse.y - scaled_vertices[i].y;
                     float distance = sqrtf(dx * dx + dy * dy);
-        
-                    if (distance <= 25.0f) {
+                    if (distance <= 50.0f) {
                         selected_index = i;
                         mode = MODE_VERTEX_DETAILS;
-                        break;
+                    }
+                }
+        
+                // Then check roads
+                for (int r = 0; r < num_roads; r++) {
+                    Vector2 p1 = {scaled_vertices[roads[r].start].x, scaled_vertices[roads[r].start].y};
+                    Vector2 p2 = {scaled_vertices[roads[r].end].x, scaled_vertices[roads[r].end].y};
+                    Vector2 m = GetMousePosition();
+        
+                    // Projection d'un point sur un segment
+                    float dx = p2.x - p1.x;
+                    float dy = p2.y - p1.y;
+                    float len_sq = dx * dx + dy * dy;
+                    float t = ((m.x - p1.x) * dx + (m.y - p1.y) * dy) / len_sq;
+                    t = fmaxf(0, fminf(1, t)); // clamp t
+                    float proj_x = p1.x + t * dx;
+                    float proj_y = p1.y + t * dy;
+        
+                    float dist = sqrtf((m.x - proj_x) * (m.x - proj_x) + (m.y - proj_y) * (m.y - proj_y));
+                    if (dist < 12.0f && len_sq > 1000.0f) { // the tolerance is bigger for the lengh than the width, bc there're roads
+                        selected_index = r;
+                        mode = MODE_ROAD_DETAILS;
                     }
                 }
             }
-            // the user clicked on a vertex
-        } else if (mode == MODE_VERTEX_DETAILS && selected_index != -1) {
+        } 
+        else if (mode == MODE_ROAD_DETAILS && selected_index != -1) {
+            init_window_road(vertices, scaled_vertices, roads, num_roads, &mode, &selected_index);
+        } 
+        else if (mode == MODE_VERTEX_DETAILS && selected_index != -1) {
             init_window_vertex(vertices, scaled_vertices, num_vertices, &mode, &selected_index);
-        }        
+        }     
+                
         EndDrawing();
     }
 

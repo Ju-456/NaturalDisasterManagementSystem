@@ -39,7 +39,7 @@ typedef struct {
     int end;           // end
     int state;         // 1: bad, 2: good, 3: very
     float weight;      // from the Adj matrix file
-    int road_capacity; // road_capacity = weight/2
+    int road_capacity; // road_capacity = weight/2 = number of vehiculs which can pass at the same time
 } Road;
 
 typedef struct {
@@ -50,7 +50,8 @@ typedef struct {
 
 typedef enum {
     MODE_GRAPH,
-    MODE_VERTEX_DETAILS
+    MODE_VERTEX_DETAILS,
+    MODE_ROAD_DETAILS
 } AppMode;
 
 #ifndef PATH_MAX
@@ -87,7 +88,7 @@ void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
 
 void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_vertices, AppMode *mode, int *selected_index);
-//void ini_window_road
+void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index);
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads);
 
 #endif
