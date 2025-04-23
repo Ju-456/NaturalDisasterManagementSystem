@@ -199,7 +199,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         return;
     }
 
-    Texture2D grass_texture = LoadTexture("City_Tilemap/grass_texture.jpg");
+    Texture2D grass_texture = LoadTexture("City_Tilemap/grass_retro1.png");
     if (grass_texture.id == 0) {
         printf("Background texture loading error.\n");
         return;
