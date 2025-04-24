@@ -189,26 +189,71 @@ void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *
     }
 }
 
+void transition_window(Texture2D transition_texture, Texture2D grass_texture, const char *message) {
+    float elapsed = 0.0f;
+
+    // during 4 sec
+    while (elapsed < 4.0f && !WindowShouldClose()) {
+        float dt = GetFrameTime();
+        elapsed += dt;
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        // same graph display
+        for (int x = 0; x < GetScreenWidth(); x += grass_texture.width) {
+            for (int y = 0; y < GetScreenHeight(); y += grass_texture.height) {
+                DrawTexture(grass_texture, x, y, WHITE);
+            }
+        }
+
+        // (fade effect)
+        unsigned char alpha = (unsigned char)(255 * (1.0f - elapsed / 4.0f));
+        Color fade_color = (Color){255, 255, 255, alpha};
+
+        // center the picture
+        int img_x = (GetScreenWidth() - transition_texture.width) / 2;
+        int img_y = (GetScreenHeight() - transition_texture.height) / 2;
+        DrawTexture(transition_texture, img_x, img_y, fade_color);
+
+        // center the text picture
+        int font_size = 40;
+        int text_width = MeasureText(message, font_size);
+        int text_x = img_x + (transition_texture.width - text_width) / 2;
+        int text_y = img_y + transition_texture.height / 2 - font_size / 2;
+        DrawText(message, text_x, text_y, font_size, fade_color);
+
+        EndDrawing();
+    }
+}
+
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
     SetTargetFPS(60);
 
     road_texture = LoadTexture("City_Tilemap/City_Transparent.png");
+    Texture2D grass_texture = LoadTexture("City_Tilemap/grass_retro1.png");
+    Texture2D transition_texture = LoadTexture("City_Tilemap/transition_texture.png");
+    AppMode mode = MODE_GRAPH;
+    int selected_index = -1;
+
     if (road_texture.id == 0) {
-        printf("Route texture loading error.\n");
-        return;
+            printf("Route texture loading error.\n");
+            return;
     }
 
-    Texture2D grass_texture = LoadTexture("City_Tilemap/grass_retro1.png");
     if (grass_texture.id == 0) {
         printf("Background texture loading error.\n");
         return;
     }
 
-    load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
+    if (transition_texture.id == 0 || grass_texture.id == 0) {
+        printf("Erreur de chargement de texture.\n");
+        return;
+    }
 
-    AppMode mode = MODE_GRAPH;
-    int selected_index = -1;
+    transition_window(transition_texture, grass_texture, "This is the graph \nbefore the earthquake...");
+    load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
 
     while (!WindowShouldClose()) {
         int screen_width = GetScreenWidth();
