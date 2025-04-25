@@ -22,6 +22,19 @@ bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[]
     return false;
 }
 
+bool are_connected_with_id(const char *id1, const char *id2, int num_roads, Road roads[], Vertex vertices[]) {
+    for (int i = 0; i < num_roads; i++) {
+        const char *start_id = vertices[roads[i].start].id;
+        const char *end_id = vertices[roads[i].end].id;
+
+        if ((strcmp(start_id, id1) == 0 && strcmp(end_id, id2) == 0) ||
+            (strcmp(start_id, id2) == 0 && strcmp(end_id, id1) == 0)) {
+                return i;
+            }
+        }
+        return -1;
+}
+
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads) {
     for (int i = 0; i < num_vertices; i++) {
         for (int j = i + 1; j < num_vertices; j++) {
@@ -86,6 +99,38 @@ void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads
             
                 DrawTexturePro(road_texture, src, dest, origin, angle, WHITE);
             }            
+        }
+    }
+}
+
+void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][100], Road roads[], int num_roads) {
+    for (int i = 0; i < num_vertices; i++) {
+        for (int j = i + 1; j < num_vertices; j++) {
+            Vertex *a = &vertices[i];
+            Vertex *b = &vertices[j];
+
+            if (!are_connected(a->id, b->id, num_roads, roads, vertices)) continue;
+
+            // display only existing roads
+            if (matrix[i][j].weight <= 0) continue;
+
+            int road_index = are_connected_with_id(a->id, b->id, num_roads, roads, vertices);
+            if (road_index == -1) continue;
+
+            Road road_before = roads[road_index];
+            Road road_after = roads[road_index];
+
+            char buffer[32];
+            snprintf(buffer, sizeof(buffer), "%d", matrix[i][j].state);  
+
+            Vector2 center = {
+                (a->x + b->x) / 2.0f,
+                (a->y + b->y) / 2.0f
+            };
+
+            Color color = (road_before.state == road_after.state) ? WHITE : ORANGE;  // The color change after the earthquake
+
+            DrawText(buffer, (int)(center.x - MeasureText(buffer, 14) / 2), (int)(center.y - 7), 14, color);
         }
     }
 }
@@ -227,7 +272,7 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
     }
 }
 
-void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads) {
+void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][100]) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
     SetTargetFPS(60);
 
@@ -252,7 +297,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         return;
     }
 
-    transition_window(transition_texture, grass_texture, "This is the graph \nbefore the earthquake...");
+    transition_window(transition_texture, grass_texture, "This is the graph \nbefore the earthquake..."); 
     load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
 
     while (!WindowShouldClose()) {
@@ -333,7 +378,8 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         else if (mode == MODE_ROAD_DETAILS && selected_index != -1) {
             init_window_road(vertices, scaled_vertices, roads, num_roads, &mode, &selected_index);
         }
-           
+
+        draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
                 
         EndDrawing();
     }

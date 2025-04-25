@@ -83,12 +83,15 @@ int earthquake (int num_vertices, Road matrix[][100]);
 // Window's part
 Vertex *find_vertex_by_id(const char *id, int num_vertices, Vertex vertices[]);
 bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[], Vertex vertices[]);
+bool are_connected_with_id(const char *id1, const char *id2, int num_roads, Road roads[], Vertex vertices[]); // used differently, for road's state
 
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads);
+void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][100], Road roads[], int num_roads);
+
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
 
 void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_vertices, AppMode *mode, int *selected_index);
 void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index);
-void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads);
+void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][100]);
 
 #endif

@@ -34,7 +34,7 @@ int main() {
         printf("Road states matrix after the earthquake:\n");
         display_roads_state_matrix(matrix, num_vertices);
 
-        init_window_custom(full_path_json, num_vertices, vertices, roads, num_roads);
+        init_window_custom(full_path_json, num_vertices, vertices, roads, num_roads, matrix);
 
     } else {
         printf("Error ! Failed to load the adjacency matrix from the file.\n");
