@@ -2,8 +2,8 @@
 #define GRAPH_H
 
 #define MAX_VERTICES 100
-#define FILENAME_TXT "graph1.txt"
-#define FILENAME_JSON "graph1.json"
+#define FILENAME_TXT "graph2.txt"
+#define FILENAME_JSON "graph2.json"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,7 +75,7 @@ int count_roads(Road roads[], Road matrix[][100], int num_vertices);
 void init_roads_characteristics(Road matrix[][100], int num_vertices);
 int display_roads_state_matrix(Road matrix[][100], int num_vertices);
 char *get_type_name(int type);
-void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads);
+void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads, Road matrix[][100]);
 
 // Earthsquake's part
 int earthquake (int num_vertices, Road matrix[][100]);
@@ -91,7 +91,7 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
 
 void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_vertices, AppMode *mode, int *selected_index);
-void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index);
+void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index, Road matrix[][100]);
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][100]);
 
 #endif

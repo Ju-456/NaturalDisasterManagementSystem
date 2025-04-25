@@ -105,7 +105,7 @@ void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads
 
 void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][100], Road roads[], int num_roads) {
     for (int i = 0; i < num_vertices; i++) {
-        for (int j = i + 1; j < num_vertices; j++) {
+        for (int j = 0; j < num_vertices; j++) {
             Vertex *a = &vertices[i];
             Vertex *b = &vertices[j];
 
@@ -118,7 +118,8 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
             if (road_index == -1) continue;
 
             Road road_before = roads[road_index];
-            Road road_after = roads[road_index];
+            int state_before = road_before.state;
+            int state_after = matrix[i][j].state;
 
             char buffer[32];
             snprintf(buffer, sizeof(buffer), "%d", matrix[i][j].state);  
@@ -127,9 +128,7 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
                 (a->x + b->x) / 2.0f,
                 (a->y + b->y) / 2.0f
             };
-
-            Color color = (road_before.state == road_after.state) ? WHITE : ORANGE;  // The color change after the earthquake
-
+            Color color = (state_before == state_after) ? WHITE : ORANGE; // The color change after the earthquake's impact
             DrawText(buffer, (int)(center.x - MeasureText(buffer, 14) / 2), (int)(center.y - 7), 14, color);
         }
     }
@@ -208,7 +207,7 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
     }
 }
 
-void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index) {
+void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index, Road matrix[][100]) {
     if (*selected_index == -1) return;
 
     Road r = roads[*selected_index];
@@ -219,7 +218,11 @@ void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *
 
     DrawText(TextFormat("Road: %s -> %s", original_vertices[r.start].id, original_vertices[r.end].id), box_x + 10, box_y + 10, 20, BLACK);
     DrawText(TextFormat("Type: (%s -> %s)", get_type_name(original_vertices[r.start].type), get_type_name(original_vertices[r.end].type)), box_x + 10, box_y + 40, 20, BLACK);
-    DrawText(TextFormat("State: %d", r.state), box_x + 10, box_y + 70, 20, BLACK);
+
+    int i  = r.start;
+    int j  = r.end;
+    DrawText(TextFormat("State: (%d -> %d)", r.state, matrix[i][j].state), box_x + 10, box_y + 70, 20, BLACK);
+        
     DrawText(TextFormat("Weight: %.0f", r.weight), box_x + 10, box_y + 100, 20, BLACK);
     DrawText(TextFormat("Capacity: %d %s", r.road_capacity, (r.road_capacity == 1 || r.road_capacity == 0) ? "vehicle" : "vehicles"), box_x + 10, box_y + 130, 20, BLACK);
     DrawText("Click outside to close", box_x + 10, box_y + 160, 14, DARKGRAY);
@@ -281,6 +284,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     Texture2D transition_texture = LoadTexture("City_Tilemap/transition_texture.png");
     AppMode mode = MODE_GRAPH;
     int selected_index = -1;
+    bool earthquake_done = false;
 
     if (road_texture.id == 0) {
             printf("Route texture loading error.\n");
@@ -297,7 +301,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         return;
     }
 
-    transition_window(transition_texture, grass_texture, "This is the graph \nbefore the earthquake..."); 
+    // transition_window(transition_texture, grass_texture, "This is the graph \nbefore the earthquake..."); 
     load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
 
     while (!WindowShouldClose()) {
@@ -376,11 +380,21 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
             init_window_vertex(vertices, scaled_vertices, num_vertices, &mode, &selected_index);
         }
         else if (mode == MODE_ROAD_DETAILS && selected_index != -1) {
-            init_window_road(vertices, scaled_vertices, roads, num_roads, &mode, &selected_index);
+            init_window_road(vertices, scaled_vertices, roads, num_roads, &mode, &selected_index, matrix);
         }
 
         draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
-                
+        
+        if (!earthquake_done){
+        earthquake (num_vertices, matrix);
+        earthquake_done = true;
+        printf("Road states matrix after the earthquake:\n");
+        display_roads_state_matrix(matrix, num_vertices);
+        display_roads_characteristics(vertices, roads, num_roads, matrix);
+        }
+        // after the earthquake
+        draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);    
+
         EndDrawing();
     }
 

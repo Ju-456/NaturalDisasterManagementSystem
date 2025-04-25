@@ -24,15 +24,15 @@ int main() {
         // Road's part
         init_roads_characteristics(matrix, num_vertices);
         num_roads = count_roads(roads, matrix, num_vertices);
-        display_roads_characteristics(vertices, roads, num_roads);
+        display_roads_characteristics(vertices, roads, num_roads, matrix);
 
         printf("Road states matrix before the earthquake:\n");
         display_roads_state_matrix(matrix, num_vertices);
 
-        earthquake (num_vertices, matrix);
+        // earthquake (num_vertices, matrix);
 
-        printf("Road states matrix after the earthquake:\n");
-        display_roads_state_matrix(matrix, num_vertices);
+        // printf("Road states matrix after the earthquake:\n");
+        // display_roads_state_matrix(matrix, num_vertices);
 
         init_window_custom(full_path_json, num_vertices, vertices, roads, num_roads, matrix);
 
