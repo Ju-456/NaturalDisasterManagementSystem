@@ -216,39 +216,38 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
     }
 }
 
-void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices, Road *roads, int num_roads, AppMode *mode, int *selected_index, Road matrix[][100]) {
-    if (*selected_index == -1) return;
+void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices,Road *roads, int num_roads,AppMode *mode, int *selected_index,Road matrix[][100]){
+    if (*selected_index == -1)
+        return;
 
     Road r = roads[*selected_index];
-    int box_x = 50, box_y = 50, box_w = 350, box_h = 180;
+    int i = r.start, j = r.end;
 
+    int box_x = 50, box_y = 50, box_w = 350, box_h = 180;
     DrawRectangle(box_x, box_y, box_w, box_h, LIGHTGRAY);
     DrawRectangleLines(box_x, box_y, box_w, box_h, DARKGRAY);
 
-    DrawText(TextFormat("Road: %s -> %s", original_vertices[r.start].id, original_vertices[r.end].id), box_x + 10, box_y + 10, 20, BLACK);
-    
-    if (get_type_name(original_vertices[r.start].type) != get_type_name(original_vertices[r.end].type)){}
-    DrawText(TextFormat("Type: (%s -> %s)", get_type_name(original_vertices[r.start].type), get_type_name(original_vertices[r.end].type)), box_x + 10, box_y + 40, 20, BLACK);
+    DrawText(TextFormat("Road: %s -> %s",original_vertices[i].id, original_vertices[j].id),box_x + 10, box_y + 10, 20, BLACK);
+    DrawText(TextFormat("Type: (%s -> %s)",get_type_name(original_vertices[i].type),get_type_name(original_vertices[j].type)),box_x + 10, box_y + 40, 20, BLACK);
 
-    int i  = r.start;
-    int j  = r.end;
-    DrawText(TextFormat("State: (%d -> %d)", r.state, matrix[i][j].state), box_x + 10, box_y + 70, 20, BLACK);
+    int old_state = r.state; // initial state
+    int new_state = matrix[i][j].state; // currrent state
 
-    if (r.state != matrix[i][j].state){ // tt rentre ici 
-        DrawText(TextFormat("State: (%d -> %d)", r.state, matrix[i][j].state), box_x + 10, box_y + 70, 20, BLACK);
+    if (old_state != new_state){
+        DrawText(TextFormat("State: (%d -> %d)", old_state, new_state),box_x + 10, box_y + 70, 20, ORANGE);
     }
-    else {// r ici
-        DrawText(TextFormat("State: %d", r.state), box_x + 10, box_y + 70, 20, BLACK);
+    else{
+        DrawText(TextFormat("State: %d", new_state),box_x + 10, box_y + 70, 20, BLACK);
     }
 
-    DrawText(TextFormat("Weight: %.0f", r.weight), box_x + 10, box_y + 100, 20, BLACK);
-    DrawText(TextFormat("Capacity: %d %s", r.road_capacity, (r.road_capacity == 1 || r.road_capacity == 0) ? "vehicle" : "vehicles"), box_x + 10, box_y + 130, 20, BLACK);
+    DrawText(TextFormat("Weight: %.0f", r.weight),box_x + 10, box_y + 100, 20, BLACK);
+    DrawText(TextFormat("Capacity: %d %s", r.road_capacity,(r.road_capacity <= 1) ? "vehicle" : "vehicles"),box_x + 10, box_y + 130, 20, BLACK);
+
     DrawText("Click outside to close", box_x + 10, box_y + 160, 14, DARKGRAY);
 
-    // close the window if the user click outside
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        Vector2 mouse = GetMousePosition();
-        if (!(mouse.x > box_x && mouse.x < box_x + box_w && mouse.y > box_y && mouse.y < box_y + box_h)) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+        Vector2 m = GetMousePosition();
+        if (m.x < box_x || m.x > box_x + box_w || m.y < box_y || m.y > box_y + box_h){
             *mode = MODE_GRAPH;
             *selected_index = -1;
         }
