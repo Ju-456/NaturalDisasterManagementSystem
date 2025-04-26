@@ -21,7 +21,6 @@ int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int
         return 0;  
     }
 
-    int i = 0, j = 0;
     int n;
     if (fscanf(file, "%d", &n) != 1) {
         perror("Error reading the number of vertices");
@@ -37,21 +36,29 @@ int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int
                 fclose(file);
                 return 0;  
             }
-            matrix[i][j].state = 0; // Initialization, will be changed after
+            matrix[i][j].state = 0; // Initialization
         }
     }
 
+    fclose(file); 
+    return 1; 
+}
+
+int display_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices) {
+    if (!load_adjacency_matrix(matrix, filename, num_vertices)) {
+        return 0;
+    }
+
     printf("Adjacency matrix (%d x %d):\n", *num_vertices, *num_vertices);
-    for (i = 0; i < *num_vertices; i++) {
-        for (j = 0; j < *num_vertices; j++) {
+    for (int i = 0; i < *num_vertices; i++) {
+        for (int j = 0; j < *num_vertices; j++) {
             printf("%.0f ", matrix[i][j].weight);
         }
         printf("\n");
     }
     printf("\n");
 
-    fclose(file);
-    return 1;  
+    return 1; 
 }
 
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads) {

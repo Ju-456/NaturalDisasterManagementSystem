@@ -17,17 +17,20 @@ int main() {
     
     if (load_adjacency_matrix(matrix, full_path_txt, &num_vertices)) {
 
+        // General's part
+        // display_adjacency_matrix(matrix, full_path_txt, &num_vertices);  // just a tool to check issue
+
         // Vertex's part
         init_vertex_characteristics(vertices, matrix, num_vertices);
-        display_vertex_characteristics(vertices, num_vertices);
+        display_vertex_characteristics(vertices, num_vertices); // have a rule in placement, be carfule !
         
         // Road's part
         init_roads_characteristics(matrix, num_vertices);
         num_roads = count_roads(roads, matrix, num_vertices);
-        display_roads_characteristics(vertices, roads, num_roads, matrix);
+        // display_roads_characteristics(vertices, roads, num_roads);
 
-        printf("Road states matrix before the earthquake:\n");
-        display_roads_state_matrix(matrix, num_vertices);
+        // printf("Road states matrix before the earthquake:\n");
+        // display_roads_state_matrix(matrix, num_vertices);
 
         // earthquake (num_vertices, matrix);
 

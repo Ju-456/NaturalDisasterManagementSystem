@@ -133,10 +133,20 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
 
             Color color;
             if (first_call) {
-                color = WHITE;
-            } else {
-                color = (state_before == state_after) ? WHITE : ORANGE;
+                color = WHITE; 
+                first_call = false; 
             }
+            else {
+                if (state_before == 3 || state_after == 3) {
+                    color = WHITE;
+                } else if ((state_before == state_after) || (state_before == 2 && state_after == 3)) {
+                    color = WHITE;
+                } else if ((state_before == 3 && state_after == 2) || (state_before == 2 && state_after == 1)){
+                    color = ORANGE;
+                }
+            }
+            // printf("Checking road between %d and %d\n", a->id, b->id);
+            // printf("state_before = %d, state_after = %d\n", state_before, state_after);
 
             DrawText(buffer, (int)(center.x - MeasureText(buffer, 14) / 2), (int)(center.y - 7), 14, color);
         }
@@ -204,7 +214,6 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
 
     DrawText(TextFormat("Storage: %s", storage_str), box_x + 10, box_y + 100, 20, BLACK);
     DrawText(TextFormat("Capacity: %d %s", v.storage_capacity, (v.storage_capacity == 1 || v.storage_capacity == 0) ? "kg" : "kgs"), box_x + 10, box_y + 130, 20, BLACK);
-    // DrawText(TextFormat("Capacity: %d kgs", v.storage_capacity), box_x + 10, box_y + 130, 20, BLACK);
     DrawText("Click outside to close", box_x + 10, box_y + 170, 14, DARKGRAY);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -281,13 +290,14 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
         int img_y = (GetScreenHeight() - transition_texture.height) / 2;
         DrawTexture(transition_texture, img_x, img_y, fade_color);
 
-        // center the text picture
-        int font_size = 40;
-        int text_width = MeasureText(message, font_size);
-        int text_x = img_x + (transition_texture.width - text_width) / 2;
-        int text_y = img_y + transition_texture.height / 2 - font_size / 2;
-        DrawText(message, text_x, text_y, font_size, fade_color);
-
+        // center the text picture IF THE MESSAGE ISN'T NULL !
+        if (message != NULL) {
+            int font_size = 40;
+            int text_width = MeasureText(message, font_size);
+            int text_x = img_x + (transition_texture.width - text_width) / 2;
+            int text_y = img_y + transition_texture.height / 2 - font_size / 2;
+            DrawText(message, text_x, text_y, font_size, fade_color);
+        }
         EndDrawing();
     }
 }
@@ -325,14 +335,9 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             transition_window(transition_texture, grass_texture, "Be carfule !\nThe earthquake is near...");
             earthquake(num_vertices, matrix);
-            draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
-            printf("Road states matrix after the earthquake:\n"); // to remove after test
-            display_roads_state_matrix(matrix, num_vertices); // to remove after test
-            
         }
 
         if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            display_roads_characteristics(vertices, roads, num_roads, matrix); // to remove after test
             draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
             *show_states = !(*show_states);
         }
@@ -410,8 +415,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         // To adapt the size if the user click "full screen"
         draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, scaled_vertices);
-        draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
-        button_click(&menu_open, &show_states, num_vertices, vertices, roads, num_roads,transition_texture, grass_texture, NULL, matrix);
+        button_click(&menu_open, &show_states, num_vertices, vertices, roads, num_roads, transition_texture, grass_texture, NULL, matrix);
 
         if (show_states) {
             draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);

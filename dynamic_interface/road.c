@@ -54,7 +54,7 @@ char *get_type_name(int type) {
     }
 }
 
-void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads, Road matrix[][100]) {
+void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads) {
     printf("There are %d roads in this map:\n\n", num_roads);
     for (int k = 0; k < num_roads; k++) {
         int i = roads[k].start;
@@ -62,7 +62,7 @@ void display_roads_characteristics(Vertex vertices[], Road roads[], int num_road
 
         printf("Road %d: %s -> %s\n", k + 1, vertices[i].id, vertices[j].id); // to skip special character
         printf("Type: (%s -> %s)\n", get_type_name(vertices[i].type), get_type_name(vertices[j].type));
-        printf("State: (%d -> %d)\n", roads[k].state, matrix[i][j].state); // change only the state which change
+        printf("State: %d\n", roads[k].state); // change only the state which change
         printf("Weight: %.0f\n", roads[k].weight);
         printf("Road capacity: %d\n", roads[k].road_capacity);
         printf("----------------------------------\n");
