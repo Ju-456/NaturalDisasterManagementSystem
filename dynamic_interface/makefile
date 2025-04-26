@@ -1,10 +1,10 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11
+CFLAGS = -Wall -Wextra -std=c11 -I./ -I/home/ju456/raylib/src
 
 # Files
-SRCS = main.c vertex.c road.c earthquake.c general.c
+SRCS = main.c vertex.c road.c earthquake.c general.c window.c parson.c
 OBJS = $(SRCS:.c=.o)
-EXEC = graph
+EXEC = graph_viewer
 
 # Build executable
 $(EXEC): $(OBJS)

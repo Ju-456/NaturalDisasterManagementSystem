@@ -9,10 +9,13 @@ int main() {
     int num_roads = 0;
     Road roads[100];
 
-    char full_path[PATH_MAX];
-    build_path(full_path);
+    char full_path_txt[PATH_MAX] = {0};
+    char full_path_json[PATH_MAX] = {0};
     
-    if (load_adjacency_matrix(matrix, full_path, &num_vertices)) {
+    build_path(full_path_txt, "MatAdj_txt/", FILENAME_TXT);
+    build_path(full_path_json, "Graph_json/", FILENAME_JSON);
+    
+    if (load_adjacency_matrix(matrix, full_path_txt, &num_vertices)) {
 
         // Vertex's part
         init_vertex_characteristics(vertices, matrix, num_vertices);
@@ -21,16 +24,17 @@ int main() {
         // Road's part
         init_roads_characteristics(matrix, num_vertices);
         num_roads = count_roads(roads, matrix, num_vertices);
-        display_roads_characteristics(vertices, roads, num_roads);
+        display_roads_characteristics(vertices, roads, num_roads, matrix);
 
-        // printf("Road states matrix before the earthquake:\n");
-        // display_roads_state_matrix(matrix, num_vertices);
+        printf("Road states matrix before the earthquake:\n");
+        display_roads_state_matrix(matrix, num_vertices);
 
-        // The earthquake
         // earthquake (num_vertices, matrix);
 
-        printf("Road states matrix after the earthquake:\n");
-        display_roads_state_matrix(matrix, num_vertices);
+        // printf("Road states matrix after the earthquake:\n");
+        // display_roads_state_matrix(matrix, num_vertices);
+
+        init_window_custom(full_path_json, num_vertices, vertices, roads, num_roads, matrix);
 
     } else {
         printf("Error ! Failed to load the adjacency matrix from the file.\n");
