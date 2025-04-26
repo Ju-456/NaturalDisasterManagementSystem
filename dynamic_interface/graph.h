@@ -35,8 +35,8 @@ typedef struct {
 } Vertex;
 
 typedef struct {
-    int start;         // start
-    int end;           // end
+    int start;         
+    int end;           
     int state;         // 1: bad, 2: good, 3: very
     float weight;      // from the Adj matrix file
     int road_capacity; // road_capacity = weight/2 = number of vehiculs which can pass at the same time

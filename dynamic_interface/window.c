@@ -128,7 +128,8 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
                 (a->x + b->x) / 2.0f,
                 (a->y + b->y) / 2.0f
             };
-            Color color = (state_before == state_after) ? WHITE : ORANGE; // The color change after the earthquake's impact
+            // Color color = (state_before == state_after) ? WHITE : ORANGE; // The color change after the earthquake's impact
+            Color color = WHITE;
             DrawText(buffer, (int)(center.x - MeasureText(buffer, 14) / 2), (int)(center.y - 7), 14, color);
         }
     }
@@ -275,6 +276,61 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
     }
 }
 
+void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads, Road matrix[][100]) {
+    Rectangle menu_button = { 10, 10, 30, 20 };
+    static double timer = 0;
+
+    if (CheckCollisionPointRec(GetMousePosition(), menu_button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        *menu_open = !(*menu_open);
+        timer = GetTime(); 
+    }
+
+    if (*menu_open && GetTime() - timer > 3.0) {
+        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 140, 70 };
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+            !CheckCollisionPointRec(GetMousePosition(), menu_rect)) {
+            *menu_open = false;
+        }
+    }
+
+    DrawCircle(menu_button.x + 1, menu_button.y + 5, 2, BLACK);
+    DrawCircle(menu_button.x + 1, menu_button.y + 10, 2, BLACK);
+    DrawCircle(menu_button.x + 1, menu_button.y + 15, 2, BLACK);
+
+    if (*menu_open) {
+        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 140, 70 };
+        DrawRectangleRec(menu_rect, LIGHTGRAY);
+        DrawText("earthquake", menu_rect.x + 25, menu_rect.y + 10, 12, BLACK);
+        DrawText("state's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
+
+        Rectangle checkbox1 = { menu_rect.x + 5, menu_rect.y + 10, 14, 14 };
+        Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
+
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            // transition_window()
+            earthquake(num_vertices, matrix);
+            printf("Road states matrix after the earthquake:\n");
+            display_roads_state_matrix(matrix, num_vertices);
+            
+        }
+
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            display_roads_characteristics(vertices, roads, num_roads, matrix);
+            draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
+            *show_states = !(*show_states);
+        }
+
+        DrawRectangleRec(checkbox1, RAYWHITE);
+        DrawRectangleRec(checkbox2, RAYWHITE);
+
+        DrawText("X", checkbox1.x + 2, checkbox1.y - 2, 14, GREEN);
+
+        if (*show_states) {
+            DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
+        }
+    }
+}
+
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][100]) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
     SetTargetFPS(60);
@@ -284,7 +340,8 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     Texture2D transition_texture = LoadTexture("City_Tilemap/transition_texture.png");
     AppMode mode = MODE_GRAPH;
     int selected_index = -1;
-    bool earthquake_done = false;
+    bool menu_open = false;
+    bool show_states = false;
 
     if (road_texture.id == 0) {
             printf("Route texture loading error.\n");
@@ -336,6 +393,12 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         // To adapt the size if the user click "full screen"
         draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, scaled_vertices);
+        draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
+        button_click(&menu_open, &show_states, num_vertices, vertices, roads, num_roads, matrix);
+
+        if (show_states) {
+            draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
+        }
 
         // the user didn't click on a vertex or road
         if (mode == MODE_GRAPH) {
@@ -382,18 +445,6 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         else if (mode == MODE_ROAD_DETAILS && selected_index != -1) {
             init_window_road(vertices, scaled_vertices, roads, num_roads, &mode, &selected_index, matrix);
         }
-
-        draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
-        
-        if (!earthquake_done){
-        earthquake (num_vertices, matrix);
-        earthquake_done = true;
-        printf("Road states matrix after the earthquake:\n");
-        display_roads_state_matrix(matrix, num_vertices);
-        display_roads_characteristics(vertices, roads, num_roads, matrix);
-        }
-        // after the earthquake
-        draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);    
 
         EndDrawing();
     }
