@@ -11,6 +11,7 @@ int count_roads(Road roads[], Road matrix[][100], int num_vertices) {
                 roads[index] = matrix[i][j];
                 roads[index].start = i;
                 roads[index].end = j;
+                roads[index].state = matrix[i][j].state;
                 index++;
             }
         }

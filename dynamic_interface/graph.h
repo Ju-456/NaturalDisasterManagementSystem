@@ -60,10 +60,7 @@ typedef enum {
 
 // General functions
 void build_path(char *full_path, const char *base_path, const char *filename);
-
 int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices);
-int display_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices);
-
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads);
 
 // Vertex's part
@@ -78,7 +75,7 @@ int count_roads(Road roads[], Road matrix[][100], int num_vertices);
 void init_roads_characteristics(Road matrix[][100], int num_vertices);
 int display_roads_state_matrix(Road matrix[][100], int num_vertices);
 char *get_type_name(int type);
-void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads);
+void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads, Road matrix[][100]);
 
 // Earthsquake's part
 int earthquake (int num_vertices, Road matrix[][100]);

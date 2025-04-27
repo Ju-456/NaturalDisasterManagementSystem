@@ -105,7 +105,7 @@ void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads
 
 void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][100], Road roads[], int num_roads) {
     static bool first_call = true; // to prevent having orange without changing states
-    
+    int k = 0;
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
             Vertex *a = &vertices[i];
@@ -116,13 +116,15 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
             // display only existing roads
             if (matrix[i][j].weight <= 0) continue;
 
-            int road_index = are_connected_with_id(a->id, b->id, num_roads, roads, vertices);
-            if (road_index == -1) continue;
+            // int road_index = are_connected_with_id(a->id, b->id, num_roads, roads, vertices);
+            // if (road_index == -1) continue;
 
-            Road road_before = roads[road_index];
+
+            Road road_before = roads[k];
             int state_before = road_before.state;
             int state_after = matrix[i][j].state;
-
+            printf("%d ", matrix[i][j].state);
+            k++;
             char buffer[32];
             snprintf(buffer, sizeof(buffer), "%d", matrix[i][j].state);  
 
@@ -137,11 +139,9 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
                 first_call = false; 
             }
             else {
-                if (state_before == 3 || state_after == 3) {
+                if ((state_before == state_after)) {
                     color = WHITE;
-                } else if ((state_before == state_after) || (state_before == 2 && state_after == 3)) {
-                    color = WHITE;
-                } else if ((state_before == 3 && state_after == 2) || (state_before == 2 && state_after == 1)){
+                } else if ((state_before != state_after)){
                     color = ORANGE;
                 }
             }
@@ -241,7 +241,6 @@ void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices,Road *r
 
     int old_state = r.state; // initial state
     int new_state = matrix[i][j].state; // currrent state
-
     if (old_state != new_state){
         DrawText(TextFormat("State: (%d -> %d)", old_state, new_state),box_x + 10, box_y + 70, 20, ORANGE);
     }
@@ -335,6 +334,10 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             transition_window(transition_texture, grass_texture, "Be carfule !\nThe earthquake is near...");
             earthquake(num_vertices, matrix);
+            for(int i = 0; i<num_roads; i++){
+                printf("%d ", roads[i].state);
+            }
+            printf("\n");
         }
 
         if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {

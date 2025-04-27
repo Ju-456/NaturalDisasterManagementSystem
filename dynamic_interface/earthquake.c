@@ -57,7 +57,6 @@ int earthquake (int num_vertices, Road matrix[][100]){
             }
         }
     }
-
     return 1;
 }
 
