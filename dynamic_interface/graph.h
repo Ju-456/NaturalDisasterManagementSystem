@@ -19,10 +19,6 @@
 #include <raylib.h>
 #include "parson.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-#define TOLERANCE 10.0f
-
 typedef struct {
     char id[3];  
     float x;
@@ -55,21 +51,6 @@ typedef struct {
 void build_path(char *full_path, const char *base_path, const char *filename);
 int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices);
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads);
-
-// Vertex's part
-void generate_vertex_id(int index, char* id_out);
-void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices);
-void sort_vertices(Vertex vertices[], int num_vertices);
-void init_vertex_characteristics(Vertex vertices[], Road matrix[][100], int num_vertices);
-void attribute_vertex_characteristics(Vertex vertices[], int num_vertices, int *hospitals, int *cities, int *warehouses);
-void display_vertex_characteristics(Vertex vertices[], int num_vertices);
-
-// Road's part
-int count_roads(Road roads[], Road matrix[][100], int num_vertices);
-void init_roads_characteristics(Road matrix[][100], int num_vertices);
-int display_roads_state_matrix(Road matrix[][100], int num_vertices);
-char *get_type_name(int type);
-void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads);
 
 // Earthsquake's part
 int earthquake (int num_vertices, Road matrix[][100]);

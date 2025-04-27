@@ -3,6 +3,10 @@
 
 #include "graph.h"
 
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+#define TOLERANCE 10.0f
+
 typedef enum {
     MODE_GRAPH,
     MODE_VERTEX_DETAILS,
