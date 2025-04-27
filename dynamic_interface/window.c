@@ -119,11 +119,10 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
             // int road_index = are_connected_with_id(a->id, b->id, num_roads, roads, vertices);
             // if (road_index == -1) continue;
 
-
             Road road_before = roads[k];
             int state_before = road_before.state;
             int state_after = matrix[i][j].state;
-            printf("%d ", matrix[i][j].state);
+            // printf("%d ", matrix[i][j].state);
             k++;
             char buffer[32];
             snprintf(buffer, sizeof(buffer), "%d", matrix[i][j].state);  
@@ -334,10 +333,10 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             transition_window(transition_texture, grass_texture, "Be carfule !\nThe earthquake is near...");
             earthquake(num_vertices, matrix);
-            for(int i = 0; i<num_roads; i++){
+            /*for(int i = 0; i<num_roads; i++){
                 printf("%d ", roads[i].state);
             }
-            printf("\n");
+            printf("\n");*/
         }
 
         if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {

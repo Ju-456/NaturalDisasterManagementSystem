@@ -68,6 +68,7 @@ void generate_vertex_id(int index, char* id_out);
 void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices);
 void sort_vertices(Vertex vertices[], int num_vertices);
 void init_vertex_characteristics(Vertex vertices[], Road matrix[][100], int num_vertices);
+void attribute_vertex_characteristics(Vertex vertices[], int num_vertices, int *hospitals, int *cities, int *warehouses);
 void display_vertex_characteristics(Vertex vertices[], int num_vertices);
 
 // Road's part
@@ -75,7 +76,7 @@ int count_roads(Road roads[], Road matrix[][100], int num_vertices);
 void init_roads_characteristics(Road matrix[][100], int num_vertices);
 int display_roads_state_matrix(Road matrix[][100], int num_vertices);
 char *get_type_name(int type);
-void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads, Road matrix[][100]);
+void display_roads_characteristics(Vertex vertices[], Road roads[], int num_roads);
 
 // Earthsquake's part
 int earthquake (int num_vertices, Road matrix[][100]);

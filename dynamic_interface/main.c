@@ -5,6 +5,7 @@ int main() {
 
     Vertex vertices[100];
     int num_vertices = 0; // in the top of the txt
+    int hospitals = 0, cities = 0, warehouses = 0;
 
     int num_roads = 0;
     Road roads[100];
@@ -22,8 +23,9 @@ int main() {
 
         // Vertex's part
         init_vertex_characteristics(vertices, matrix, num_vertices);
-        display_vertex_characteristics(vertices, num_vertices); // have a rule in placement, be carfule !
-        
+        attribute_vertex_characteristics(vertices, num_vertices, &hospitals, &cities, &warehouses);
+        // display_vertex_characteristics(vertices, num_vertices);
+
         // Road's part
         init_roads_characteristics(matrix, num_vertices);
         num_roads = count_roads(roads, matrix, num_vertices);
