@@ -2,6 +2,7 @@
 #define GENERAL
 
 #include "graph.h"
+#include "window.h"
 
 // Used  for txt and json
 void build_path(char *full_path, const char *base_path, const char *filename) {

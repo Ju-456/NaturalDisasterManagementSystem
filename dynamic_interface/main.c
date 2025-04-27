@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "window.h"
 
 int main() {
     Road matrix[100][100];
