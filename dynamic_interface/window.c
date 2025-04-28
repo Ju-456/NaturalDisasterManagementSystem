@@ -23,19 +23,6 @@ bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[]
     return false;
 }
 
-bool are_connected_with_id(const char *id1, const char *id2, int num_roads, Road roads[], Vertex vertices[]) {
-    for (int i = 0; i < num_roads; i++) {
-        const char *start_id = vertices[roads[i].start].id;
-        const char *end_id = vertices[roads[i].end].id;
-
-        if ((strcmp(start_id, id1) == 0 && strcmp(end_id, id2) == 0) ||
-            (strcmp(start_id, id2) == 0 && strcmp(end_id, id1) == 0)) {
-                return i;
-            }
-        }
-        return -1;
-}
-
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads) {
     for (int i = 0; i < num_vertices; i++) {
         for (int j = i + 1; j < num_vertices; j++) {
@@ -116,9 +103,6 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
 
             // display only existing roads
             if (matrix[i][j].weight <= 0) continue;
-
-            // int road_index = are_connected_with_id(a->id, b->id, num_roads, roads, vertices);
-            // if (road_index == -1) continue;
 
             Road road_before = roads[k];
             int state_before = road_before.state;
@@ -332,7 +316,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
 
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            transition_window(transition_texture, grass_texture, "Be carfule !\nThe earthquake is near...");
+            transition_window(transition_texture, grass_texture, "Be carful !\nThe earthquake is near...");
             earthquake(num_vertices, matrix);
             /*for(int i = 0; i<num_roads; i++){
                 printf("%d ", roads[i].state);

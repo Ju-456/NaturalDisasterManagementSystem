@@ -16,7 +16,6 @@ typedef enum {
 // Window's part
 Vertex *find_vertex_by_id(const char *id, int num_vertices, Vertex vertices[]);
 bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[], Vertex vertices[]);
-bool are_connected_with_id(const char *id1, const char *id2, int num_roads, Road roads[], Vertex vertices[]); // used differently, for road's state
 
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads);
 void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][100], Road roads[], int num_roads);
