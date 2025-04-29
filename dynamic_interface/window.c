@@ -405,7 +405,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         button_click(&menu_open, &show_states, num_vertices, vertices, roads, num_roads, transition_texture, grass_texture, NULL, matrix);
 
         if (show_states) {
-            draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
+            draw_state_for_existing_roads(num_vertices, scaled_vertices, matrix, roads, num_roads);
         }
 
         // the user didn't click on a vertex or road
