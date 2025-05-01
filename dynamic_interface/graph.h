@@ -2,8 +2,8 @@
 #define GRAPH_H
 
 #define MAX_VERTICES 100
-#define FILENAME_TXT "graphL2.txt"
-#define FILENAME_JSON "graphL2.json"
+#define FILENAME_TXT "graphXL.txt"
+#define FILENAME_JSON "graphXL.json"
 
 #include <stdio.h>
 #include <stdlib.h>
