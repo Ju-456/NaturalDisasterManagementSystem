@@ -62,10 +62,32 @@ int display_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, 
     return 1; 
 }
 
+void read_id_from_json(const char *full_path_json, Vertex vertices[], int *num_vertices) {
+    JSON_Value *root_val = json_parse_file(full_path_json);
+    JSON_Object *root_obj = json_value_get_object(root_val);
+
+    if (root_val == NULL) {
+        fprintf(stderr, "Error parsing JSON file: %s\n", full_path_json);
+        return;
+    }
+
+    JSON_Array *ids = json_object_get_array(root_obj, "nodesIds");
+    *num_vertices = json_array_get_count(ids);
+
+    for (int i = 0; i < *num_vertices; i++) {
+        const char *id = json_array_get_string(ids, i);
+        strcpy(vertices[i].id, id);  
+    }
+
+    json_value_free(root_val);
+}
+
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads) {
     char* strTmp = (char*)malloc(256*sizeof(char));
     strcpy(strTmp,full_path_json);
     build_path(strTmp, "Graph_json/", FILENAME_JSON);
+
+    read_id_from_json(full_path_json, vertices, num_vertices);
 
     JSON_Value *root_val = json_parse_file(full_path_json);
     JSON_Object *root_obj = json_value_get_object(root_val);

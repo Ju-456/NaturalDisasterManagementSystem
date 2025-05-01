@@ -36,7 +36,7 @@ void init_roads_characteristics(Road matrix[][100], int num_vertices) {
 }
 
 int display_roads_state_matrix(Road matrix[][100], int num_vertices) {
-    //printf("Road states matrix:\n");
+    printf("Road states matrix:\n");
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
             printf("%d ", matrix[i][j].state);

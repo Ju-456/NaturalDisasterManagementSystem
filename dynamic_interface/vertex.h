@@ -4,7 +4,6 @@
 #include "graph.h"
 
 // Vertex's part
-void generate_vertex_id(int index, char* id_out);
 void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices);
 void sort_vertices(Vertex vertices[], int num_vertices);
 void init_vertex_characteristics(Vertex vertices[], Road matrix[][100], int num_vertices);

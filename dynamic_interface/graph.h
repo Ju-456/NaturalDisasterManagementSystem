@@ -2,8 +2,8 @@
 #define GRAPH_H
 
 #define MAX_VERTICES 100
-#define FILENAME_TXT "graph2.txt"
-#define FILENAME_JSON "graph2.json"
+#define FILENAME_TXT "graphL2.txt"
+#define FILENAME_JSON "graphL2.json"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,6 +50,7 @@ typedef struct {
 // General functions
 void build_path(char *full_path, const char *base_path, const char *filename);
 int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices);
+void read_ids_from_json(const char *full_path_json, Vertex vertices[], int *num_vertices);
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads);
 
 // Earthsquake's part

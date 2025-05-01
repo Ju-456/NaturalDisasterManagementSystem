@@ -3,33 +3,10 @@
 
 #include "graph.h"
 
-void generate_vertex_id(int index, char* id_out) {
-    const int base = 52;
-    const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-    char temp[10];
-    int len = 0;
-
-    index++; // Pour que 0 donne bien "A", pas vide
-
-    while (index > 0) {
-        index--; // Ajuste pour éviter les caractères hors charset
-        temp[len++] = charset[index % base];
-        index /= base;
-    }
-
-    // Renverse la chaîne
-    for (int i = 0; i < len; i++) {
-        id_out[i] = temp[len - i - 1];
-    }
-
-    id_out[len] = '\0';
-}
-
 // to determin the vertex's type
 void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices) {
     for (int i = 0; i < num_vertices; i++) {
-        generate_vertex_id(i, vertices[i].id); // new fct
+        // generate_vertex_id(i, vertices[i].id); // use directly id from json bc it'more reliable
         vertices[i].degree = 0;
         for (int j = 0; j < num_vertices; j++) {
             if (matrix[i][j].weight > 0) {
