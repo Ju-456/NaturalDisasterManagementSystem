@@ -1,6 +1,7 @@
 #include "road.h"
 #include "vertex.h"
 #include "window.h"
+#include "shortestPath.h"
 
 int main() {
     Road matrix[100][100];
@@ -38,7 +39,7 @@ int main() {
 
         // printf("Road states matrix after the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
-
+        dijkstra(num_vertices, matrix, 0);
         init_window_custom(full_path_json, num_vertices, vertices, roads, num_roads, matrix);
 
         //Display's part
