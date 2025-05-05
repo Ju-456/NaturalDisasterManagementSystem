@@ -3,7 +3,7 @@
 
 #include "graph.h"
 
-int count_roads(Road roads[], Road matrix[][100], int num_vertices) {
+int count_roads(Road roads[], Road matrix[][MAX_VERTICES], int num_vertices) {
     int index = 0;
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
@@ -19,14 +19,12 @@ int count_roads(Road roads[], Road matrix[][100], int num_vertices) {
     return index;
 }
 
-void init_roads_characteristics(Road matrix[][100], int num_vertices) {
-    srand(time(NULL)); 
-
+void init_roads_characteristics(Road matrix[][MAX_VERTICES], int num_vertices) {
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
             if (matrix[i][j].weight > 0) {
                 matrix[i][j].road_capacity = matrix[i][j].weight / 2; 
-                matrix[i][j].state = (rand() % 2) + 2; // 2 or 3
+                matrix[i][j].state = (rand() % 2) + 3;// now 1 and 2 it's ONLY after the earthquake
             } else {
                 matrix[i][j].road_capacity = 0;
                 matrix[i][j].state = 0;
@@ -35,7 +33,7 @@ void init_roads_characteristics(Road matrix[][100], int num_vertices) {
     }
 }
 
-int display_roads_state_matrix(Road matrix[][100], int num_vertices) {
+int display_roads_state_matrix(Road matrix[][MAX_VERTICES], int num_vertices) {
     printf("Road states matrix:\n");
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {

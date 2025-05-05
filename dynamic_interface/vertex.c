@@ -4,7 +4,7 @@
 #include "graph.h"
 
 // to determin the vertex's type
-void count_vertex_degree(Vertex vertices[], Road matrix[][100], int num_vertices) {
+void count_vertex_degree(Vertex vertices[], Road matrix[][MAX_VERTICES], int num_vertices) {
     for (int i = 0; i < num_vertices; i++) {
         // generate_vertex_id(i, vertices[i].id); // use directly id from json bc it'more reliable
         vertices[i].degree = 0;
@@ -31,7 +31,7 @@ void sort_vertices(Vertex vertices[], int num_vertices) {
     }
 }
 
-void init_vertex_characteristics(Vertex vertices[], Road matrix[][100], int num_vertices) {
+void init_vertex_characteristics(Vertex vertices[], Road matrix[][MAX_VERTICES], int num_vertices) {
     count_vertex_degree(vertices, matrix, num_vertices);
     
     // Sort the vertices by degree and lexicographically

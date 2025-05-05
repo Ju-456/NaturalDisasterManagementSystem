@@ -3,7 +3,7 @@
 
 #include "graph.h"
 
-int earthquake (int num_vertices, Road matrix[][100]){
+int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]){
     srand(time(NULL)); 
     printf("Be careful !!! EARTHQUAKE : ");
 

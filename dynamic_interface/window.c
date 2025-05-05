@@ -1,3 +1,4 @@
+#include "graph.h"
 #include "window.h"
 #include "road.h"
 
@@ -91,7 +92,7 @@ void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads
     }
 }
 
-void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][100], Road roads[], int num_roads) {
+void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][MAX_VERTICES], Road roads[], int num_roads) {
     static bool first_call = true; // to prevent having orange without changing states
     int k = 0;
     for (int i = 0; i < num_vertices; i++) {
@@ -196,7 +197,7 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
         (v.type == 0) ? ((v.type_of_storage == 1) ? "Meds, Other" : "Other, Meds") :
         "Other";
 
-    DrawText(TextFormat("Storage: %s", storage_str), box_x + 10, box_y + 100, 20, BLACK);
+    DrawText(TextFormat("Storage: %s", storage_str), box_x + 10, box_y + MAX_VERTICES, 20, BLACK);
     DrawText(TextFormat("Capacity: %d %s", v.storage_capacity, (v.storage_capacity == 1 || v.storage_capacity == 0) ? "kg" : "kgs"), box_x + 10, box_y + 130, 20, BLACK);
     DrawText("Click outside to close", box_x + 10, box_y + 170, 14, DARKGRAY);
 
@@ -209,7 +210,7 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
     }
 }
 
-void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices,Road *roads, int num_roads,AppMode *mode, int *selected_index,Road matrix[][100]){
+void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices,Road *roads, int num_roads,AppMode *mode, int *selected_index,Road matrix[][MAX_VERTICES]){
     if (*selected_index == -1)
         return;
 
@@ -232,7 +233,7 @@ void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices,Road *r
         DrawText(TextFormat("State: %d", new_state),box_x + 10, box_y + 70, 20, BLACK);
     }
 
-    DrawText(TextFormat("Weight: %.0f", r.weight),box_x + 10, box_y + 100, 20, BLACK);
+    DrawText(TextFormat("Weight: %.0f", r.weight),box_x + 10, box_y + MAX_VERTICES, 20, BLACK);
     DrawText(TextFormat("Capacity: %d %s", r.road_capacity,(r.road_capacity <= 1) ? "vehicle" : "vehicles"),box_x + 10, box_y + 130, 20, BLACK);
 
     DrawText("Click outside to close", box_x + 10, box_y + 160, 14, DARKGRAY);
@@ -285,7 +286,7 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
     }
 }
 
-void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads,Texture2D transition_texture, Texture2D grass_texture, const char *message, Road matrix[][100]) {
+void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads,Texture2D transition_texture, Texture2D grass_texture, const char *message, Road matrix[][MAX_VERTICES]) {
     Rectangle menu_button = { 10, 10, 30, 20 };
     static double timer = 0;
 
@@ -340,7 +341,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
     }
 }
 
-void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][100]) {
+void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][MAX_VERTICES]) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
     SetTargetFPS(60);
 

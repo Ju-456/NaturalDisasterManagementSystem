@@ -27,6 +27,8 @@ typedef struct {
     int type;                 // 0: city, 1: hospital, 2: warehouse
     int type_of_storage;      // 0: food, 1: medicine, 2: other resources
     int storage_capacity;     // in kg(s) = degree * 2
+    int need;                 // 0: all fine 1: issue to fix !
+    int issue;                // 1: need hospital, 2: need warehouse (after earthquake, vertex need resources)
 } Vertex;
 
 typedef struct {
@@ -35,6 +37,7 @@ typedef struct {
     int state;         // 1: bad, 2: good, 3: very
     float weight;      // from the Adj matrix file
     int road_capacity; // road_capacity = weight/2 = number of vehiculs which can pass at the same time
+    int travel_time;   // depends of state and weight
 } Road;
 
 typedef struct {

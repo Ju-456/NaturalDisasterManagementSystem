@@ -2,16 +2,17 @@
 #include "vertex.h"
 #include "window.h"
 #include "shortestPath.h"
+#include "travel.h"
 
 int main() {
-    Road matrix[100][100];
+    Road matrix[MAX_VERTICES][MAX_VERTICES];
 
-    Vertex vertices[100];
+    Vertex vertices[MAX_VERTICES];
     int num_vertices = 0; // in the top of the txt
     int hospitals = 0, cities = 0, warehouses = 0;
 
     int num_roads = 0;
-    Road roads[100];
+    Road roads[MAX_VERTICES];
 
     char full_path_txt[PATH_MAX] = {0};
     char full_path_json[PATH_MAX] = {0};
@@ -35,7 +36,7 @@ int main() {
         // printf("Road states matrix before the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
 
-        // earthquake(num_vertices, matrix);
+        earthquake(num_vertices, matrix);
 
         // printf("Road states matrix after the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
@@ -45,6 +46,13 @@ int main() {
         //Display's part
         //display_roads_characteristics(vertices, roads, num_roads); //doesn't work before the last function
         //display_vertex_characteristics(vertices, num_vertices); //doesn't work before the last function
+
+        //Travel's part
+        init_city_need(num_vertices, matrix, vertices);
+        init_type_of_issue(num_vertices, matrix, vertices);
+        init_travel_time(num_vertices, matrix);
+        display_info_travel(num_vertices, matrix, vertices);
+
     } else {
         printf("Error ! Failed to load the adjacency matrix from the file.\n");
         return 1;
