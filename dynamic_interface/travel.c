@@ -65,30 +65,3 @@ void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex v
         }
     }
 }
-/*
-void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]) {
-    printf("=== City Information ===\n");
-    for (int i = 0; i < num_vertices; i++) {
-        printf("City %d: need = %d, issue = %d\n", i, vertices[i].need, vertices[i].issue);
-    }
-
-    printf("\n=== Road Information ===\n");
-    for (int i = 0; i < num_vertices; i++) {
-        for (int j = 0; j < num_vertices; j++) {
-            if (matrix[i][j].state == 1 || matrix[i][j].state == 2) {
-                int time = matrix[i][j].travel_time;
-
-                if (time > 60) {
-                    int hours = time / 60;
-                    int minutes = time % 60;
-                    printf("Road from %d to %d: state = %d, capacity = %d, travel time = %dh%02d\n",
-                           i, j, matrix[i][j].state, matrix[i][j].road_capacity, hours, minutes);
-                } else {
-                    printf("Road from %d to %d: state = %d, capacity = %d, travel time = %dmin\n",
-                           i, j, matrix[i][j].state, matrix[i][j].road_capacity, time);
-                }
-            }
-        }
-    }
-}
-*/

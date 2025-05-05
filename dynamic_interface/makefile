@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -I./ -I/home/ju456/raylib/src
 
 # Files
-SRCS = main.c vertex.c road.c earthquake.c general.c window.c parson.c
+SRCS = main.c parson.c vertex.c road.c earthquake.c general.c window.c shortestPath.c travel.c
 OBJS = $(SRCS:.c=.o)
 EXEC = graph_viewer
 

@@ -130,8 +130,8 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
                     color = ORANGE;
                 }
             }
-            // printf("Checking road between %d and %d\n", a->id, b->id);
-            // printf("state_before = %d, state_after = %d\n", state_before, state_after);
+            printf("Checking road between %d and %d\n", a->id, b->id);
+            printf("state_before = %d, state_after = %d\n", state_before, state_after);
 
             DrawText(buffer, (int)(center.x - MeasureText(buffer, 14) / 2), (int)(center.y - 7), 14, color);
         }

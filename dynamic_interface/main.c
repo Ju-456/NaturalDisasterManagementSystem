@@ -36,7 +36,7 @@ int main() {
         // printf("Road states matrix before the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
 
-        earthquake(num_vertices, matrix);
+        // earthquake(num_vertices, matrix);
 
         // printf("Road states matrix after the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
