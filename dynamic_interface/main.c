@@ -1,7 +1,6 @@
 #include "road.h"
 #include "vertex.h"
 #include "window.h"
-#include "shortestPath.h"
 #include "travel.h"
 
 int main() {

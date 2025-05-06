@@ -59,4 +59,7 @@ void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex 
 // Earthsquake's part
 int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]);
 
+//shortest path part
+void dijkstra(int n, Road matrix[][MAX_VERTICES], int start);
+
 #endif

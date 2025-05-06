@@ -1,6 +1,5 @@
 #include "graph.h"
 #include "road.h"
-#include "shortestPath.h"
 #define INF INT_MAX
 
 int verif(int *isMarked, int n){
@@ -10,22 +9,6 @@ int verif(int *isMarked, int n){
         }
     }
     return 0;
-}
-
-int min(int n, Road matrix[][MAX_VERTICES], int i){
-    int min = INF;
-    int s = -1;
-    for(int j = 0; j<n; j++){
-        // printf("%.f ", matrix[i][j].weight);
-        if(matrix[i][j].weight != 0){
-            printf("%.f ", matrix[i][j].weight);
-            if(matrix[i][j].weight < min){
-                min = matrix[i][j].weight;
-                s = j;
-            }
-        }
-    } 
-    return s;
 }
 
 void dijkstra(int n, Road matrix[][MAX_VERTICES], int start){
