@@ -53,10 +53,10 @@ typedef struct {
 // General functions
 void build_path(char *full_path, const char *base_path, const char *filename);
 int load_adjacency_matrix(Road matrix[][MAX_VERTICES], const char *filename, int *num_vertices);
-void read_ids_from_json(const char *full_path_json, Vertex vertices[], int *num_vertices);
+void read_id_from_json(const char *full_path_json, Vertex vertices[], int *num_vertices);
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads);
 
 // Earthsquake's part
-int earthquake (int num_vertices, Road matrix[][100]);
+int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]);
 
 #endif

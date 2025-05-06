@@ -12,7 +12,7 @@ int verif(int *isMarked, int n){
     return 0;
 }
 
-int min(int n, Road matrix[][100], int i){
+int min(int n, Road matrix[][MAX_VERTICES], int i){
     int min = INF;
     int s = -1;
     for(int j = 0; j<n; j++){
@@ -28,7 +28,7 @@ int min(int n, Road matrix[][100], int i){
     return s;
 }
 
-void dijkstra(int n, Road matrix[][100], int start){
+void dijkstra(int n, Road matrix[][MAX_VERTICES], int start){
     int length[n];
     int node = start;
     length[node] = 0;

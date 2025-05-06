@@ -3,7 +3,7 @@
 
 #include "graph.h"
 
-int min(int n, Road matrix[][100], int j);
-void dijkstra(int n, Road matrix[][100], int start);
+int min(int n, Road matrix[][MAX_VERTICES], int j);
+void dijkstra(int n, Road matrix[][MAX_VERTICES], int start);
 
 #endif
