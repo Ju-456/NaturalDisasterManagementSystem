@@ -39,7 +39,7 @@ int main() {
 
         // printf("Road states matrix after the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
-        dijkstra(num_vertices, matrix, 0);
+        dijkstra(num_vertices, matrix, vertices, 0);
         init_window_custom(full_path_json, num_vertices, vertices, roads, num_roads, matrix);
 
         //Display's part

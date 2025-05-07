@@ -28,7 +28,9 @@ typedef struct {
     int type_of_storage;      // 0: food, 1: medicine, 2: other resources
     int storage_capacity;     // in kg(s) = degree * 2
     int need;                 // 0: all fine 1: issue to fix !
-    int issue;                // 1: need hospital, 2: need warehouse (after earthquake, vertex need resources)
+    int issue; 
+    int nextVertex[100];
+    int shortestPath[100];                // 1: need hospital, 2: need warehouse (after earthquake, vertex need resources)
 } Vertex;
 
 typedef struct {
@@ -60,6 +62,6 @@ void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex 
 int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]);
 
 //shortest path part
-void dijkstra(int n, Road matrix[][MAX_VERTICES], int start);
+void dijkstra(int num_vertices, Road matrix[][100], Vertex vertices[], int start);
 
 #endif

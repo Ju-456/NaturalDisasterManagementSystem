@@ -2,8 +2,8 @@
 #include "road.h"
 #define INF INT_MAX
 
-int verif(int *isMarked, int n){
-    for(int i = 0; i<n; i++){
+int verif(int *isMarked, int num_vertices){
+    for(int i = 0; i<num_vertices; i++){
         if(isMarked[i] == -1){
             return -1;
         }
@@ -11,15 +11,31 @@ int verif(int *isMarked, int n){
     return 0;
 }
 
-void dijkstra(int n, Road matrix[][MAX_VERTICES], int start){
-    int length[n];
+int min(int num_vertices, Road matrix[][100], int i){
+    int min = INF;
+    int s = -1;
+    for(int j = 0; j<num_vertices; j++){
+        // printf("%.f ", matrix[i][j].weight);
+        if(matrix[i][j].weight != 0){
+            printf("%.f ", matrix[i][j].weight);
+            if(matrix[i][j].weight < min){
+                min = matrix[i][j].weight;
+                s = j;
+            }
+        }
+    } 
+    return s;
+}
+
+void dijkstra(int num_vertices, Road matrix[][100], Vertex vertices[], int start){
+    int length[num_vertices];
     int node = start;
     length[node] = 0;
-    int isMarked[n];
-    int next[n];
+    int isMarked[num_vertices];
+    int next[num_vertices];
     isMarked[node] = 0;
     int min;
-    for(int i = 0; i<n; i++){
+    for(int i = 0; i<num_vertices; i++){
         if(i != node){
             length[i] = INF;
             isMarked[i] = -1;
@@ -28,10 +44,10 @@ void dijkstra(int n, Road matrix[][MAX_VERTICES], int start){
     }
     isMarked[node] = 0;
     min = INF;
-    while(verif(isMarked, n) != 0){
+    while(verif(isMarked, num_vertices) != 0){
         min = INF;
         isMarked[node] = 0;
-        for(int j = 0; j<n; j++){
+        for(int j = 0; j<num_vertices; j++){
             if(matrix[node][j].weight != 0){
                 if(matrix[node][j].weight + length[node] < length[j]){
                     length[j] = matrix[node][j].weight + length[node];
@@ -44,14 +60,14 @@ void dijkstra(int n, Road matrix[][MAX_VERTICES], int start){
                 }
             }
         }
-        for(int i = 0; i<n; i++){
+        for(int i = 0; i<num_vertices; i++){
             if(length[i] < min && isMarked[i] != 0){
                 node = i;
                 min = length[i];
             }
         }
         if(min == INF){
-            for(int i = 0; i < n; i++){
+            for(int i = 0; i < num_vertices; i++){
                 if(length[i] == INF){
                     length[i] = -1;
                     isMarked[i] = 0;
@@ -59,13 +75,14 @@ void dijkstra(int n, Road matrix[][MAX_VERTICES], int start){
             }
         }
     }
-    for(int i = 0; i<n; i++){
-        printf("%d ", length[i]);
+    for(int i = 0; i<num_vertices; i++){
+        vertices[start].nextVertex[i] = next[i];
+        printf("%d ", vertices[start].nextVertex[i]);
     }
     printf("\n");
-    for(int i = 0; i<n; i++){
-        printf("%d ", next[i]);
+    for(int i = 0; i<num_vertices; i++){
+        vertices[start].shortestPath[i] = length[i];
+        printf("%d ", vertices[start].shortestPath[i]);
     }
     printf("\n");
 }
-
