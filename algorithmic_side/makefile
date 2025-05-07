@@ -1,18 +1,21 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -I./ -I/home/ju456/raylib/src
+
+CFLAGS = -Wall -I./ -I/home/ju456/raylib/src
+LDFLAGS = -L/home/ju456/raylib/src -lraylib -lm -lpthread -ldl -lX11
 
 # Files
-SRCS = main.c vertex.c road.c earthquake.c general.c window.c parson.c
+SRCS = main.c general.c parson.c vertex.c road.c earthquake.c window.c shortestPath.c travel.c
 OBJS = $(SRCS:.c=.o)
+HEADERS = graph.h vertex.h road.h earthquake.h window.h shortestPath.h travel.h
 EXEC = graph_viewer
 
 # Build executable
 $(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
-# Object files
-%.o: %.c graph.h
-	$(CC) $(CFLAGS) -c $<
+# Compile .c to .o
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Clean build files
 clean:
@@ -20,4 +23,3 @@ clean:
 
 # Rebuild from scratch
 rebuild: clean $(EXEC)
-
