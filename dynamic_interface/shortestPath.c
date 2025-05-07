@@ -11,7 +11,7 @@ int verif(int *isMarked, int num_vertices){
     return 0;
 }
 
-int min(int num_vertices, Road matrix[][100], int i){
+int min(int num_vertices, Road matrix[][MAX_VERTICES], int i){
     int min = INF;
     int s = -1;
     for(int j = 0; j<num_vertices; j++){
@@ -27,7 +27,7 @@ int min(int num_vertices, Road matrix[][100], int i){
     return s;
 }
 
-void dijkstra(int num_vertices, Road matrix[][100], Vertex vertices[], int start){
+void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start){
     int length[num_vertices];
     int node = start;
     length[node] = 0;
@@ -82,7 +82,12 @@ void dijkstra(int num_vertices, Road matrix[][100], Vertex vertices[], int start
     printf("\n");
     for(int i = 0; i<num_vertices; i++){
         vertices[start].shortestPath[i] = length[i];
-        printf("%d ", vertices[start].shortestPath[i]);
+        if(vertices[start].shortestPath[i] != INF){
+            printf("%d ", vertices[start].shortestPath[i]);
+        }
+        else{
+            printf("INF");
+        }
     }
     printf("\n");
 }
