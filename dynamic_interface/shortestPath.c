@@ -76,7 +76,12 @@ void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], 
     }
     for(int i = 0; i<num_vertices; i++){
         vertices[start].nextVertex[i] = next[i];
-        printf("%d ", vertices[start].nextVertex[i]);
+        if(vertices[start].nextVertex[i] != INF){
+            printf("%d ", vertices[start].nextVertex[i]);
+        }
+        else{
+            printf("INF ");
+        }
     }
     printf("\n");
     for(int i = 0; i<num_vertices; i++){
@@ -85,7 +90,7 @@ void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], 
             printf("%d ", vertices[start].shortestPath[i]);
         }
         else{
-            printf("INF");
+            printf("INF ");
         }
     }
     printf("\n");
