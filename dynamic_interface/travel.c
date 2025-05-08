@@ -65,3 +65,43 @@ void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex v
         }
     }
 }
+
+int research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type) {
+    dijkstra(num_vertices, matrix, vertices, start);
+
+    int min_distance = INF;
+    int closest_vertex = -1;
+
+    for (int i = 0; i < num_vertices; i++) {
+        if (vertices[i].type == target_type && vertices[start].shortestPath[i] != -1 && vertices[start].shortestPath[i] < min_distance) {
+            min_distance = vertices[start].shortestPath[i];
+            closest_vertex = i;
+        }
+    }
+
+    return closest_vertex;
+}
+
+void display_research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type) {
+    int closest_vertex = research_closest_vertex(num_vertices, matrix, vertices, start, target_type);
+
+    if (closest_vertex != -1) {
+        int distance = vertices[start].shortestPath[closest_vertex];
+        printf("From city %d, closest type %d is city %d (distance: %d)\n", 
+               start, target_type, closest_vertex, distance);
+    } else {
+        printf("No reachable vertex of type %d from city %d\n", target_type, start);
+    }
+}
+
+void travel_to_city(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]) {
+    for (int i = 0; i < num_vertices; i++) {
+        if (vertices[i].need == 1) {
+            if (vertices[i].issue == 1) {
+                research_closest_vertex(num_vertices, matrix, vertices, i, 1); // need hospital ressources
+            } else if (vertices[i].issue == 2) {
+                research_closest_vertex(num_vertices, matrix, vertices, i, 2); // need warehousse ressources
+            }
+        }
+    }
+}

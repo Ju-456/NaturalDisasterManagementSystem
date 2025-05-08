@@ -181,7 +181,7 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
     if (*selected_index == -1) return;
 
     Vertex v = vertices[*selected_index];
-    int box_x = 50, box_y = 50, box_w = 300, box_h = 200;
+    int box_x = 50, box_y = 50, box_w = 300, box_h = 150;
 
     DrawRectangle(box_x, box_y, box_w, box_h, LIGHTGRAY);
     DrawRectangleLines(box_x, box_y, box_w, box_h, DARKGRAY);
@@ -191,15 +191,8 @@ void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_verti
     const char* type_str = (v.type == 0) ? "City" : (v.type == 1) ? "Hospital" : "Warehouse";
     DrawText(TextFormat("Type: %s", type_str), box_x + 10, box_y + 40, 20, BLACK);
     DrawText(TextFormat("Degree: %d", v.degree), box_x + 10, box_y + 70, 20, BLACK);
-
-    const char* storage_str =
-        (v.type == 1) ? ((v.type_of_storage == 0) ? "Food, Meds" : "Meds, Food") :
-        (v.type == 0) ? ((v.type_of_storage == 1) ? "Meds, Other" : "Other, Meds") :
-        "Other";
-
-    DrawText(TextFormat("Storage: %s", storage_str), box_x + 10, box_y + MAX_VERTICES, 20, BLACK);
-    DrawText(TextFormat("Capacity: %d %s", v.storage_capacity, (v.storage_capacity == 1 || v.storage_capacity == 0) ? "kg" : "kgs"), box_x + 10, box_y + 130, 20, BLACK);
-    DrawText("Click outside to close", box_x + 10, box_y + 170, 14, DARKGRAY);
+    DrawText(TextFormat("Capacity: %d %s", v.storage_capacity, (v.storage_capacity == 1 || v.storage_capacity == 0) ? "kg" : "kgs"), box_x + 10, box_y + 100, 20, BLACK);
+    DrawText("Click outside to close", box_x + 10, box_y + 130, 14, DARKGRAY);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Vector2 mouse = GetMousePosition();

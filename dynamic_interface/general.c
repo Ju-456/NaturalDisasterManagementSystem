@@ -1,6 +1,3 @@
-#ifndef GENERAL
-#define GENERAL
-
 #include "graph.h"
 #include "window.h"
 
@@ -129,5 +126,3 @@ void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex 
 
     json_value_free(root_val);
 }
-
-#endif

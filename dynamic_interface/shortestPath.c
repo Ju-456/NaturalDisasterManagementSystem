@@ -1,6 +1,5 @@
 #include "graph.h"
 #include "road.h"
-#define INF INT_MAX
 
 int verif(int *isMarked, int num_vertices){
     for(int i = 0; i<num_vertices; i++){

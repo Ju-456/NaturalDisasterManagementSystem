@@ -1,0 +1,5 @@
+.vscode/
+algorithmic_side/.vscode/
+interface_side/.vscode/
+*.o
+
