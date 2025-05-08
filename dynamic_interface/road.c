@@ -1,6 +1,3 @@
-#ifndef ROAD
-#define ROAD
-
 #include "graph.h"
 
 int count_roads(Road roads[], Road matrix[][MAX_VERTICES], int num_vertices) {
@@ -67,5 +64,3 @@ void display_roads_characteristics(Vertex vertices[], Road roads[], int num_road
         printf("----------------------------------\n");
     }
 }
-
-#endif
