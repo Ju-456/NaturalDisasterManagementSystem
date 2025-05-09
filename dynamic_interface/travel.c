@@ -90,9 +90,7 @@ void display_research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICE
 
     if (closest_vertex != -1) {
         int distance = vertices[start].shortestPath[closest_vertex];
-
         const char* target_name = (target_type == 1) ? "hospital" : "warehouse";
-
         printf("From city %d (%s), closest %s is city %d (%s) (distance: %d)\n\n", 
                start, vertices[start].id,target_name, closest_vertex, vertices[closest_vertex].id, distance);
     } else {
@@ -101,16 +99,36 @@ void display_research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICE
     }
 }
 
-void travel_to_city(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]) {
+void travel_to_city(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES], int* order_for_intervention) {
     for (int i = 0; i < num_vertices; i++) {
         if (vertices[i].need == 1) {// if you won't display, just call 'research_closest_vertex' only
             if (vertices[i].issue == 1) { 
                 // research_closest_vertex(num_vertices, matrix, vertices, i, 1); // need hospital ressources
                 display_research_closest_vertex(num_vertices, matrix, vertices, i, 1);
+                display_priority_of_processing_vertices(num_vertices, matrix, vertices, i, 1, order_for_intervention);
             } else if (vertices[i].issue == 2) {
                 // research_closest_vertex(num_vertices, matrix, vertices, i, 2); // need warehousse ressources
                 display_research_closest_vertex(num_vertices, matrix, vertices, i, 2);
+                display_priority_of_processing_vertices(num_vertices, matrix, vertices, i, 2, order_for_intervention);
             }
         }
+    }
+}
+
+void display_priority_of_processing_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type, int* order_for_intervention){
+    int closest_vertex = research_closest_vertex(num_vertices, matrix, vertices, start, target_type);
+    if (closest_vertex != -1) {
+        int distance = vertices[start].shortestPath[closest_vertex];
+
+        if (distance == 0){
+            printf("This intervention for the city %d (%s) does not require travel (distance = 0).\nThe treatment of this issue is done at the same place.\n\n",start, vertices[start].id);
+            (*order_for_intervention)++;
+        } else {
+            printf("This intervention for the city %d (%s) will be treated at priority %d because the distance is %d\n\n",start, vertices[start].id, *order_for_intervention, distance);
+            (*order_for_intervention)++;
+        }
+    } else {
+        printf("No reachable vertex of type %d from city %d (%s), We can't assign priority.\n\n",
+               target_type, start, vertices[start].id);
     }
 }
