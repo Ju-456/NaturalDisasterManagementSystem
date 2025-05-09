@@ -34,6 +34,8 @@ typedef struct {
 } Vertex;
 
 typedef struct {
+    char id[MAX_VERTICES];
+    char path[MAX_VERTICES];
     int start;         
     int end;           
     int state;         // 1: bad, 2: good, 3: very
