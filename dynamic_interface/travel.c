@@ -48,7 +48,9 @@ void init_travel_time(int num_vertices, Road matrix[][MAX_VERTICES]) {
 void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]) {
     printf("=== City Information ===\n");
     for (int i = 0; i < num_vertices; i++) {
-        printf("City %d: need = %d, issue = %d\n", i, vertices[i].need, vertices[i].issue);
+        if ((vertices[i].need = 1) && (vertices[i].issue != 0)){
+            printf("City %d: need = %d, issue = %d\n", i, vertices[i].need, vertices[i].issue);
+        }
     }
 
     printf("\n=== Road Information ===\n");
@@ -64,11 +66,12 @@ void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex v
             }
         }
     }
+    printf("\n\n");
 }
 
 int research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type) {
     dijkstra(num_vertices, matrix, vertices, start);
-
+    display_dijkstra(num_vertices, vertices, start);
     int min_distance = INF;
     int closest_vertex = -1;
 
@@ -87,20 +90,26 @@ void display_research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICE
 
     if (closest_vertex != -1) {
         int distance = vertices[start].shortestPath[closest_vertex];
-        printf("From city %d, closest type %d is city %d (distance: %d)\n", 
-               start, target_type, closest_vertex, distance);
+
+        const char* target_name = (target_type == 1) ? "hospital" : "warehouse";
+
+        printf("From city %d (%s), closest %s is city %d (%s) (distance: %d)\n\n", 
+               start, vertices[start].id,target_name, closest_vertex, vertices[closest_vertex].id, distance);
     } else {
-        printf("No reachable vertex of type %d from city %d\n", target_type, start);
+        const char* target_name = (target_type == 1) ? "hospital" : "warehouse";
+        printf("No reachable %s from city %d (%s)\n\n", target_name, start, vertices[start].id);
     }
 }
 
 void travel_to_city(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]) {
     for (int i = 0; i < num_vertices; i++) {
-        if (vertices[i].need == 1) {
-            if (vertices[i].issue == 1) {
-                research_closest_vertex(num_vertices, matrix, vertices, i, 1); // need hospital ressources
+        if (vertices[i].need == 1) {// if you won't display, just call 'research_closest_vertex' only
+            if (vertices[i].issue == 1) { 
+                // research_closest_vertex(num_vertices, matrix, vertices, i, 1); // need hospital ressources
+                display_research_closest_vertex(num_vertices, matrix, vertices, i, 1);
             } else if (vertices[i].issue == 2) {
-                research_closest_vertex(num_vertices, matrix, vertices, i, 2); // need warehousse ressources
+                // research_closest_vertex(num_vertices, matrix, vertices, i, 2); // need warehousse ressources
+                display_research_closest_vertex(num_vertices, matrix, vertices, i, 2);
             }
         }
     }

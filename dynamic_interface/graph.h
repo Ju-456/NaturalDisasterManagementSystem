@@ -63,5 +63,6 @@ int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]);
 
 //shortest path part
 void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start);
+void display_dijkstra(int num_vertices, Vertex vertices[], int start);
 
 #endif
