@@ -241,6 +241,57 @@ void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices,Road *r
     }
 }
 
+void display_travel_effects(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int index, int* order_for_intervention) {
+    int closest_vertex = vertices[index].closest;
+
+    if (closest_vertex == -1 || vertices[index].need != 1) return;
+
+    static double start_time[MAX_VERTICES] = {0};
+    static bool animation_started[MAX_VERTICES] = {false};
+
+    int distance = vertices[index].shortestPath[closest_vertex];
+
+    float x_start = vertices[index].x;
+    float y_start = vertices[index].y;
+
+    float x_target = vertices[closest_vertex].x;
+    float y_target = vertices[closest_vertex].y;
+
+    if (!animation_started[index]) {
+        start_time[index] = GetTime();
+        animation_started[index] = true;
+    }
+
+    double elapsed = GetTime() - start_time[index];
+
+    if (distance == 0) {
+        if (elapsed < 3.0) {
+            if (((int)(elapsed * 2)) % 2 == 0) {
+                DrawCircle(x_start, y_start, 8, RED);
+            }
+        } else if (elapsed < 6.0) {
+            DrawCircle(x_start, y_start, 8, GREEN);
+        } else {
+            vertices[index].issue = 0;
+            vertices[index].need = 0;
+            animation_started[index] = false;
+        }
+    } else {
+        float t = elapsed / 3.0f;
+        if (t < 1.0f) {
+            float x = x_start + t * (x_target - x_start);
+            float y = y_start + t * (y_target - y_start);
+            DrawCircle(x, y, 6, RED);
+        } else if (elapsed < 6.0f) {
+            DrawCircle(x_target, y_target, 8, GREEN);
+        } else {
+            vertices[index].issue = 0;
+            vertices[index].need = 0;
+            animation_started[index] = false;
+        }
+    }
+}
+
 void transition_window(Texture2D transition_texture, Texture2D grass_texture, const char *message) {
     float elapsed = 0.0f;
 
@@ -280,9 +331,13 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
     }
 }
 
-void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads,Texture2D transition_texture, Texture2D grass_texture, const char *message, Road matrix[][MAX_VERTICES], int order_for_intervention) {
+void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads,Texture2D transition_texture, Texture2D grass_texture, const char *message,
+                  Road matrix[][MAX_VERTICES], int order_for_intervention) {
+    
     Rectangle menu_button = { 10, 10, 30, 20 };
     static double timer = 0;
+    static int current_intervention_index = 0; // to treat issue step by step
+    static bool interventions_initialized = false;
 
     if (CheckCollisionPointRec(GetMousePosition(), menu_button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         *menu_open = !(*menu_open);
@@ -312,22 +367,29 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
         Rectangle checkbox3 = { menu_rect.x + 5, menu_rect.y + 70, 14, 14 };
 
+        // Earthquake
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            transition_window(transition_texture, grass_texture, "Be carful !\nThe earthquake is near...");
+            transition_window(transition_texture, grass_texture, "Be careful!\nThe earthquake is near...");
             earthquake(num_vertices, matrix);
         }
 
+        // Show states
         if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
             *show_states = !(*show_states);
         }
 
+        // Start interventions
         if (CheckCollisionPointRec(GetMousePosition(), checkbox3) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            transition_window(transition_texture, grass_texture, "Interventions will be made\nin the order of priority established");
             init_city_need(num_vertices, matrix, vertices);
             init_type_of_issue(num_roads, matrix, vertices);        
             init_travel_time(num_vertices, matrix);                 
             display_info_travel(num_vertices, matrix, vertices);   
             travel_to_city(num_vertices, matrix, vertices, &order_for_intervention);
+
+            current_intervention_index = 0;
+            interventions_initialized = true;
         }
 
         DrawRectangleRec(checkbox1, RAYWHITE);
@@ -335,14 +397,25 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         DrawRectangleRec(checkbox3, RAYWHITE);
 
         DrawText("X", checkbox1.x + 2, checkbox1.y - 2, 14, GREEN);
-
-        if (*show_states) {
-            DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
-        }
-
+        if (*show_states) DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
         DrawText("X", checkbox3.x + 2, checkbox3.y - 2, 14, GREEN);
     }
+
+    if (interventions_initialized) {
+        while (current_intervention_index < num_vertices) {
+            if (vertices[current_intervention_index].need == 1 && vertices[current_intervention_index].closest != -1) {
+                display_travel_effects(num_vertices, matrix, vertices, current_intervention_index, &order_for_intervention);
+                break; // only one display per frame
+            }
+            current_intervention_index++;
+        }
+
+        if (current_intervention_index >= num_vertices) {
+            interventions_initialized = false;
+        }
+    }
 }
+
 
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][MAX_VERTICES], int order_for_intervention) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");

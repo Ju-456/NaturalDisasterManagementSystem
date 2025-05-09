@@ -31,6 +31,7 @@ typedef struct {
     int issue;               // 1: need hospital, 2: need warehouse (after earthquake, vertex need resources)
     int nextVertex[MAX_VERTICES];
     int shortestPath[MAX_VERTICES]; // The way TO the vertex it needs (e.g. : city -> hopital)
+    int closest;
 } Vertex;
 
 typedef struct {

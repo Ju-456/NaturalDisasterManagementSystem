@@ -81,7 +81,7 @@ int research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Verte
             closest_vertex = i;
         }
     }
-
+    vertices[start].closest = closest_vertex; 
     return closest_vertex;
 }
 
