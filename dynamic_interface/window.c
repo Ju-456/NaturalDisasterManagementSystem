@@ -1,6 +1,7 @@
 #include "graph.h"
 #include "window.h"
 #include "road.h"
+#include "travel.h"
 
 Texture2D road_texture;
 
@@ -279,7 +280,7 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
     }
 }
 
-void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads,Texture2D transition_texture, Texture2D grass_texture, const char *message, Road matrix[][MAX_VERTICES]) {
+void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads,Texture2D transition_texture, Texture2D grass_texture, const char *message, Road matrix[][MAX_VERTICES], int order_for_intervention) {
     Rectangle menu_button = { 10, 10, 30, 20 };
     static double timer = 0;
 
@@ -289,7 +290,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
     }
 
     if (*menu_open && GetTime() - timer > 3.0) {
-        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 140, 70 };
+        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 140, 95 };
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
             !CheckCollisionPointRec(GetMousePosition(), menu_rect)) {
             *menu_open = false;
@@ -301,21 +302,19 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
     DrawCircle(menu_button.x + 1, menu_button.y + 15, 2, BLACK);
 
     if (*menu_open) {
-        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 140, 70 };
+        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 140, 95 };
         DrawRectangleRec(menu_rect, LIGHTGRAY);
         DrawText("earthquake", menu_rect.x + 25, menu_rect.y + 10, 12, BLACK);
         DrawText("state's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
+        DrawText("intervention", menu_rect.x + 25, menu_rect.y + 70, 12, BLACK);
 
         Rectangle checkbox1 = { menu_rect.x + 5, menu_rect.y + 10, 14, 14 };
         Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
+        Rectangle checkbox3 = { menu_rect.x + 5, menu_rect.y + 70, 14, 14 };
 
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             transition_window(transition_texture, grass_texture, "Be carful !\nThe earthquake is near...");
             earthquake(num_vertices, matrix);
-            /*for(int i = 0; i<num_roads; i++){
-                printf("%d ", roads[i].state);
-            }
-            printf("\n");*/
         }
 
         if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -323,18 +322,29 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
             *show_states = !(*show_states);
         }
 
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox3) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            init_city_need(num_vertices, matrix, vertices);
+            init_type_of_issue(num_roads, matrix, vertices);        
+            init_travel_time(num_vertices, matrix);                 
+            display_info_travel(num_vertices, matrix, vertices);   
+            travel_to_city(num_vertices, matrix, vertices, &order_for_intervention);
+        }
+
         DrawRectangleRec(checkbox1, RAYWHITE);
         DrawRectangleRec(checkbox2, RAYWHITE);
+        DrawRectangleRec(checkbox3, RAYWHITE);
 
         DrawText("X", checkbox1.x + 2, checkbox1.y - 2, 14, GREEN);
 
         if (*show_states) {
             DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
         }
+
+        DrawText("X", checkbox3.x + 2, checkbox3.y - 2, 14, GREEN);
     }
 }
 
-void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][MAX_VERTICES]) {
+void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][MAX_VERTICES], int order_for_intervention) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
     SetTargetFPS(60);
 
@@ -396,7 +406,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         // To adapt the size if the user click "full screen"
         draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, scaled_vertices);
-        button_click(&menu_open, &show_states, num_vertices, vertices, roads, num_roads, transition_texture, grass_texture, NULL, matrix);
+        button_click(&menu_open, &show_states, num_vertices, vertices, roads, num_roads, transition_texture, grass_texture, NULL, matrix, order_for_intervention);
 
         if (show_states) {
             draw_state_for_existing_roads(num_vertices, scaled_vertices, matrix, roads, num_roads);
