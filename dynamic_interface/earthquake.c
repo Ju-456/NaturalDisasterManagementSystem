@@ -1,6 +1,3 @@
-#ifndef EARTHQUAKE
-#define EARTHQUAKE
-
 #include "graph.h"
 
 int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]){
@@ -59,5 +56,3 @@ int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]){
     }
     return 1;
 }
-
-#endif

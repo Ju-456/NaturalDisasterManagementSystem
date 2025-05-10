@@ -32,7 +32,8 @@ void init_travel_time(int num_vertices, Road matrix[][MAX_VERTICES]) {
                 else {
                     matrix[i][j].travel_time = matrix[i][j].weight * 3;
                 }
-            } else if (matrix[i][j].state == 2){
+            } 
+            else if (matrix[i][j].state == 2){
                 matrix[i][j].road_capacity = matrix[i][j].road_capacity * 0.6; // decrease of 40% 
                 if (matrix[i][j].weight > 15){
                     matrix[i][j].travel_time = matrix[i][j].weight * 2;
@@ -48,7 +49,9 @@ void init_travel_time(int num_vertices, Road matrix[][MAX_VERTICES]) {
 void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]) {
     printf("=== City Information ===\n");
     for (int i = 0; i < num_vertices; i++) {
-        printf("City %d: need = %d, issue = %d\n", i, vertices[i].need, vertices[i].issue);
+        if ((vertices[i].need = 1) && (vertices[i].issue != 0)){
+            printf("City %d: need = %d, issue = %d\n", i, vertices[i].need, vertices[i].issue);
+        }
     }
 
     printf("\n=== Road Information ===\n");
@@ -64,11 +67,12 @@ void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex v
             }
         }
     }
+    printf("\n\n");
 }
 
 int research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type) {
     dijkstra(num_vertices, matrix, vertices, start);
-
+    display_dijkstra(num_vertices, vertices, start);
     int min_distance = INF;
     int closest_vertex = -1;
 
@@ -78,40 +82,54 @@ int research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Verte
             closest_vertex = i;
         }
     }
-
+    vertices[start].closest = closest_vertex; 
     return closest_vertex;
 }
 
 void display_research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type) {
-    for(int i = 0; i<num_vertices; i++){
-        // int closest_vertex = research_closest_vertex(num_vertices, matrix, vertices, i, need);
-        int need = travel_to_city(num_vertices, matrix, vertices, i);
-        int closest_vertex = research_closest_vertex(num_vertices, matrix, vertices, i, need);
-        if (closest_vertex != -1 && need != -1) {
-            int distance = vertices[i].shortestPath[closest_vertex];
-            printf("From city %d, closest type %d is city %d (distance: %d)\n", 
-                i,need, closest_vertex, distance);
-        }
-        else if(need == -1){
-            printf("this city hasn't been touched by the earthquake\n");
-        } 
-        else {
-            printf("No reachable vertex of type %d from city %d\n", need, i);
+    int closest_vertex = research_closest_vertex(num_vertices, matrix, vertices, start, target_type);
+
+    if (closest_vertex != -1) {
+        int distance = vertices[start].shortestPath[closest_vertex];
+        const char* target_name = (target_type == 1) ? "hospital" : "warehouse";
+        printf("From city %d (%s), closest %s is city %d (%s) (distance: %d)\n\n", 
+               start, vertices[start].id,target_name, closest_vertex, vertices[closest_vertex].id, distance);
+    } else {
+        const char* target_name = (target_type == 1) ? "hospital" : "warehouse";
+        printf("No reachable %s from city %d (%s)\n\n", target_name, start, vertices[start].id);
+    }
+}
+
+void travel_to_city(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES], int* order_for_intervention) {
+    for (int i = 0; i < num_vertices; i++) {
+        if (vertices[i].need == 1) {// if you won't display, just call 'research_closest_vertex' only
+            if (vertices[i].issue == 1) { 
+                // research_closest_vertex(num_vertices, matrix, vertices, i, 1); // need hospital ressources
+                display_research_closest_vertex(num_vertices, matrix, vertices, i, 1);
+                display_priority_of_processing_vertices(num_vertices, matrix, vertices, i, 1, order_for_intervention);
+            } else if (vertices[i].issue == 2) {
+                // research_closest_vertex(num_vertices, matrix, vertices, i, 2); // need warehousse ressources
+                display_research_closest_vertex(num_vertices, matrix, vertices, i, 2);
+                display_priority_of_processing_vertices(num_vertices, matrix, vertices, i, 2, order_for_intervention);
+            }
         }
     }
 }
 
-int travel_to_city(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES], int start) {
-    // for (int i = 0; i < num_vertices; i++) {
-        if (vertices[start].need == 1) {
-            if (vertices[start].issue == 1) {
-                // research_closest_vertex(num_vertices, matrix, vertices, i, 1); // need hospital ressources
-                return 1;
-            } else if (vertices[start].issue == 2) {
-                // research_closest_vertex(num_vertices, matrix, vertices, i, 2); // need warehousse ressources
-                return 2;
-            }
+void display_priority_of_processing_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type, int* order_for_intervention){
+    int closest_vertex = research_closest_vertex(num_vertices, matrix, vertices, start, target_type);
+    if (closest_vertex != -1) {
+        int distance = vertices[start].shortestPath[closest_vertex];
+
+        if (distance == 0){
+            printf("This intervention for the city %d (%s) does not require travel (distance = 0).\nThe treatment of this issue is done at the same place.\n\n",start, vertices[start].id);
+            (*order_for_intervention)++;
+        } else {
+            printf("This intervention for the city %d (%s) will be treated at priority %d because the distance is %d\n\n",start, vertices[start].id, *order_for_intervention, distance);
+            (*order_for_intervention)++;
         }
-    // }
-    return -1;
+    } else {
+        printf("No reachable vertex of type %d from city %d (%s), We can't assign priority.\n\n",
+               target_type, start, vertices[start].id);
+    }
 }

@@ -1,6 +1,3 @@
-#ifndef VERTEX
-#define VERTEX
-
 #include "graph.h"
 
 // to determin the vertex's type
@@ -100,5 +97,3 @@ void display_vertex_characteristics(Vertex vertices[], int num_vertices) {
         printf("----------------------------------\n");
     }
 }
-
-#endif

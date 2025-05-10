@@ -31,9 +31,12 @@ typedef struct {
     int issue;               // 1: need hospital, 2: need warehouse (after earthquake, vertex need resources)
     int nextVertex[MAX_VERTICES];
     int shortestPath[MAX_VERTICES]; // The way TO the vertex it needs (e.g. : city -> hopital)
+    int closest;
 } Vertex;
 
 typedef struct {
+    char id[MAX_VERTICES];
+    char path[MAX_VERTICES];
     int start;         
     int end;           
     int state;         // 1: bad, 2: good, 3: very
@@ -63,5 +66,6 @@ int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]);
 
 //shortest path part
 void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start);
+void display_dijkstra(int num_vertices, Vertex vertices[], int start);
 
 #endif
