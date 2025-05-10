@@ -14,5 +14,6 @@ void display_priority_of_processing_vertices(int num_vertices, Road matrix[][MAX
 int research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type);
 void display_research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type);
 void travel_to_city(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES], int* order_for_intervention);
+void update_closest_vertices(int num_vertices, Vertex vertices[]);
 
 #endif

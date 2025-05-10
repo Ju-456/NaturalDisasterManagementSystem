@@ -263,6 +263,14 @@ void display_travel_effects(int num_vertices, Road matrix[][MAX_VERTICES], Verte
     }
 
     double elapsed = GetTime() - start_time[index];
+    // Dimensions du texte
+    int text_width = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[vertices[index].closest].id), 18);
+    int text_height = 18;
+
+    DrawRectangle(15, 15, text_width + 10, text_height + 5, LIGHTGRAY); 
+    DrawRectangleLines(15, 15, text_width + 10, text_height + 5, DARKGRAY); 
+
+    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[vertices[index].closest].id), 20, 20, 18, BLACK);
 
     if (distance == 0) {
         if (elapsed < 3.0) {
@@ -277,11 +285,18 @@ void display_travel_effects(int num_vertices, Road matrix[][MAX_VERTICES], Verte
             animation_started[index] = false;
         }
     } else {
-        float t = elapsed / 3.0f;
-        if (t < 1.0f) {
-            float x = x_start + t * (x_target - x_start);
-            float y = y_start + t * (y_target - y_start);
-            DrawCircle(x, y, 6, RED);
+        float travel_duration = 3.0f;
+        float step_spacing = 0.2f;  // distance (in time) between each step (e.g., 0.2s)
+
+        if (elapsed < travel_duration) {
+            int step_count = (int)(elapsed / step_spacing);
+            for (int i = 0; i <= step_count; i++) {
+                float t = (i * step_spacing) / travel_duration;
+                if (t > 1.0f) t = 1.0f;
+                float x = x_start + t * (x_target - x_start);
+                float y = y_start + t * (y_target - y_start);
+                DrawCircle(x, y, 4, RED); // smaller red steps
+            }
         } else if (elapsed < 6.0f) {
             DrawCircle(x_target, y_target, 8, GREEN);
         } else {
@@ -387,6 +402,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
             init_travel_time(num_vertices, matrix);                 
             display_info_travel(num_vertices, matrix, vertices);   
             travel_to_city(num_vertices, matrix, vertices, &order_for_intervention);
+            update_closest_vertices(num_vertices, vertices);
 
             current_intervention_index = 0;
             interventions_initialized = true;

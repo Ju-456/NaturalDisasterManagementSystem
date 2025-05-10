@@ -133,3 +133,29 @@ void display_priority_of_processing_vertices(int num_vertices, Road matrix[][MAX
                target_type, start, vertices[start].id);
     }
 }
+
+// to udpate status to graphic part
+void update_closest_vertices(int num_vertices, Vertex vertices[]) {
+    for (int i = 0; i < num_vertices; i++) {
+        if (vertices[i].need != 1) {
+            vertices[i].closest = -1; // Pas besoin => aucun sommet cible
+            continue;
+        }
+
+        int min_distance = INT_MAX;
+        int closest_index = -1;
+
+        for (int j = 0; j < num_vertices; j++) {
+            if (i == j) continue;
+            if (vertices[j].issue != 0) continue; // destination déjà en cours de traitement
+            if (vertices[i].shortestPath[j] <= 0) continue; // aucune route valide
+
+            if (vertices[i].shortestPath[j] < min_distance) {
+                min_distance = vertices[i].shortestPath[j];
+                closest_index = j;
+            }
+        }
+
+        vertices[i].closest = closest_index;
+    }
+}
