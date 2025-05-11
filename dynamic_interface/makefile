@@ -7,7 +7,7 @@ LDFLAGS = -L/home/ju456/raylib/src -lraylib -lm -lpthread -ldl -lX11
 SRCS = main.c general.c parson.c vertex.c road.c earthquake.c window.c shortestPath.c travel.c
 OBJS = $(SRCS:.c=.o)
 HEADERS = graph.h vertex.h road.h earthquake.h window.h shortestPath.h travel.h
-EXEC = graph_viewer
+EXEC = graph
 
 # Build executable
 $(EXEC): $(OBJS)

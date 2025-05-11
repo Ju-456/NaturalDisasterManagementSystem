@@ -178,6 +178,69 @@ void draw_vertices_with_type(int num_vertices, Vertex *vertices) {
     }
 }
 
+void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
+    int closest_vertex = vertices[index].closest;
+    if (closest_vertex == -1 || vertices[index].need != 1) return;
+
+    static double start_time[MAX_VERTICES] = {0};
+    static bool animation_started[MAX_VERTICES] = {false};
+
+    if (!animation_started[index]) {
+        start_time[index] = GetTime();
+        animation_started[index] = true;
+    }
+
+    double elapsed = GetTime() - start_time[index];
+
+    // display of the intervention
+    int text_width = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id), 18);
+    DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY); 
+    DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY); 
+    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id), 20, 20, 18, BLACK);
+
+    // Reconstruction of Path with Dijstra
+    Point route_points[MAX_VERTICES];  
+    int point_count = build_path_points(num_vertices, vertices, index, closest_vertex, route_points, &point_count);
+
+    if (point_count == 0) {
+        DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY); 
+        DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY); 
+        DrawText("Path doesn't exist", 20, 50, 18, ORANGE);
+        vertices[index].issue = 0;
+        vertices[index].need = 0;
+        animation_started[index] = false;
+        return;
+    }
+
+    // Animation part
+    float total_duration = 3.0f;
+    float step_spacing = 0.2f;
+
+    if (elapsed < total_duration) {
+        int steps = (int)(elapsed / step_spacing);
+        for (int s = 0; s <= steps; s++) {
+            float t = (s * step_spacing) / total_duration;
+            if (t > 1.0f) t = 1.0f;
+
+            float p = t * (point_count - 1);
+            int k = (int)p;
+            float f = p - k;
+            if (k >= point_count - 1) k = point_count - 2;
+
+            float x = route_points[k].x + f * (route_points[k + 1].x - route_points[k].x);
+            float y = route_points[k].y + f * (route_points[k + 1].y - route_points[k].y);
+            DrawCircle(x, y, 4, ORANGE);
+        }
+    } else if (elapsed < 6.0f) {
+        Point last = route_points[point_count - 1];
+        DrawCircle(last.x, last.y, 8, GREEN);
+    } else {
+        vertices[index].issue = 0;
+        vertices[index].need = 0;
+        animation_started[index] = false;
+    }
+}
+
 void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_vertices, AppMode *mode, int *selected_index) {
     if (*selected_index == -1) return;
 
@@ -237,72 +300,6 @@ void init_window_road(Vertex *original_vertices, Vertex *scaled_vertices,Road *r
         if (m.x < box_x || m.x > box_x + box_w || m.y < box_y || m.y > box_y + box_h){
             *mode = MODE_GRAPH;
             *selected_index = -1;
-        }
-    }
-}
-
-void display_travel_effects(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int index, int* order_for_intervention) {
-    int closest_vertex = vertices[index].closest;
-
-    if (closest_vertex == -1 || vertices[index].need != 1) return;
-
-    static double start_time[MAX_VERTICES] = {0};
-    static bool animation_started[MAX_VERTICES] = {false};
-
-    int distance = vertices[index].shortestPath[closest_vertex];
-
-    float x_start = vertices[index].x;
-    float y_start = vertices[index].y;
-
-    float x_target = vertices[closest_vertex].x;
-    float y_target = vertices[closest_vertex].y;
-
-    if (!animation_started[index]) {
-        start_time[index] = GetTime();
-        animation_started[index] = true;
-    }
-
-    double elapsed = GetTime() - start_time[index];
-    // Dimensions du texte
-    int text_width = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[vertices[index].closest].id), 18);
-    int text_height = 18;
-
-    DrawRectangle(15, 15, text_width + 10, text_height + 5, LIGHTGRAY); 
-    DrawRectangleLines(15, 15, text_width + 10, text_height + 5, DARKGRAY); 
-
-    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[vertices[index].closest].id), 20, 20, 18, BLACK);
-
-    if (distance == 0) {
-        if (elapsed < 3.0) {
-            if (((int)(elapsed * 2)) % 2 == 0) {
-                DrawCircle(x_start, y_start, 8, RED);
-            }
-        } else if (elapsed < 6.0) {
-            DrawCircle(x_start, y_start, 8, GREEN);
-        } else {
-            vertices[index].issue = 0;
-            vertices[index].need = 0;
-            animation_started[index] = false;
-        }
-    } else {
-        float travel_duration = 3.0f;
-        float step_spacing = 0.2f;  // distance (in time) between each step (e.g., 0.2s)
-
-        if (elapsed < travel_duration) {
-            int step_count = (int)(elapsed / step_spacing);
-            for (int i = 0; i <= step_count; i++) {
-                float t = (i * step_spacing) / travel_duration;
-                if (t > 1.0f) t = 1.0f;
-                float x = x_start + t * (x_target - x_start);
-                float y = y_start + t * (y_target - y_start);
-                DrawCircle(x, y, 4, RED); // smaller red steps
-            }
-        } else if (elapsed < 6.0f) {
-            DrawCircle(x_target, y_target, 8, GREEN);
-        } else {
-            vertices[index].issue = 0;
-            vertices[index].need = 0;
-            animation_started[index] = false;
         }
     }
 }
@@ -420,7 +417,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
     if (interventions_initialized) {
         while (current_intervention_index < num_vertices) {
             if (vertices[current_intervention_index].need == 1 && vertices[current_intervention_index].closest != -1) {
-                display_travel_effects(num_vertices, matrix, vertices, current_intervention_index, &order_for_intervention);
+                draw_travel_effects(num_vertices, vertices, current_intervention_index);
                 break; // only one display per frame
             }
             current_intervention_index++;
@@ -431,7 +428,6 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         }
     }
 }
-
 
 void init_window_custom(const char *filename, int num_vertices, Vertex *vertices, Road *roads, int num_roads, Road matrix[][MAX_VERTICES], int order_for_intervention) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");

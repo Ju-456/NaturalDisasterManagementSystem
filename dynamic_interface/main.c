@@ -34,7 +34,6 @@ int main() {
         // printf("Road states matrix before the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
 
-        earthquake(num_vertices, matrix);
         int order_for_intervention = 1;
 
         // printf("Road states matrix after the earthquake:\n");
@@ -44,15 +43,8 @@ int main() {
         init_roads_id(vertices, roads, num_roads);
         
         //Display's part
-        display_roads_characteristics(vertices, roads, num_roads); //doesn't work before the last function
-        // display_vertex_characteristics(vertices, num_vertices); //doesn't work before the last function
-        
-        // Travel's part
-        // init_city_need(num_vertices, matrix, vertices);
-        // init_type_of_issue(num_roads, matrix, vertices);        
-        // init_travel_time(num_vertices, matrix);                 
-        // display_info_travel(num_vertices, matrix, vertices);   
-        // travel_to_city(num_vertices, matrix, vertices, &order_for_intervention);        
+        // display_roads_characteristics(vertices, roads, num_roads); //doesn't work before the last function
+        // display_vertex_characteristics(vertices, num_vertices); //doesn't work before the last function       
 
     } else {
         printf("Error ! Failed to load the adjacency matrix from the file.\n");

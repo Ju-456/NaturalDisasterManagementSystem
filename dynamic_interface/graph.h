@@ -29,6 +29,7 @@ typedef struct {
     int storage_capacity;     // in kg(s) = degree * 2
     int need;                 // 0: all fine 1: issue to fix !
     int issue;               // 1: need hospital, 2: need warehouse (after earthquake, vertex need resources)
+    int predecessor[MAX_VERTICES];
     int nextVertex[MAX_VERTICES];
     int shortestPath[MAX_VERTICES]; // The way TO the vertex it needs (e.g. : city -> hopital)
     int closest;
@@ -36,7 +37,6 @@ typedef struct {
 
 typedef struct {
     char id[MAX_VERTICES];
-    char path[MAX_VERTICES];
     int start;         
     int end;           
     int state;         // 1: bad, 2: good, 3: very
@@ -50,6 +50,8 @@ typedef struct {
     int truck;
     int vehicle_capacity;
 } Vehicle;
+
+typedef struct { float x, y; } Point;
 
 #ifndef PATH_MAX
 #define PATH_MAX 4096 
@@ -65,7 +67,10 @@ void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex 
 int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]);
 
 //shortest path part
+int verif(int *isMarked, int num_vertices);
+int min(int num_vertices, Road matrix[][MAX_VERTICES], int i);
 void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start);
 void display_dijkstra(int num_vertices, Vertex vertices[], int start);
+int build_path_points(int num_vertices, Vertex vertices[], int start, int target, Point* path_points, int* point_count);
 
 #endif

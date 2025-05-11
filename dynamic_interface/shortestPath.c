@@ -33,7 +33,6 @@ void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], 
     int isMarked[num_vertices];
     int next[num_vertices];
     isMarked[node] = 0;
-    int min;
 
     for (int i = 0; i < num_vertices; i++) {
         if (i != node) {
@@ -41,10 +40,11 @@ void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], 
             isMarked[i] = -1;
         }
         next[i] = INF;
+        vertices[start].predecessor[i] = -1;  
     }
 
     isMarked[node] = 0;
-    min = INF;
+    int min = INF;
 
     while (verif(isMarked, num_vertices) != 0) {
         min = INF;
@@ -58,9 +58,11 @@ void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], 
                     } else {
                         next[j] = next[node];
                     }
+                    vertices[start].predecessor[j] = node;  
                 }
             }
         }
+
         for (int i = 0; i < num_vertices; i++) {
             if (length[i] < min && isMarked[i] != 0) {
                 node = i;
@@ -76,6 +78,7 @@ void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], 
             }
         }
     }
+
     for (int i = 0; i < num_vertices; i++) {
         vertices[start].nextVertex[i] = next[i];
         vertices[start].shortestPath[i] = length[i];
@@ -100,4 +103,22 @@ void display_dijkstra(int num_vertices, Vertex vertices[], int start) {
             printf("INF ");
     }
     printf("\n");
+}
+
+int build_path_points(int num_vertices, Vertex vertices[], int start, int target, Point* path_points, int* point_count) {
+    int current = target;
+    *point_count = 0; 
+
+    while (current != start && current != -1) { // Parcours the predecessor's path
+        path_points[*point_count] = (Point){ vertices[current].x, vertices[current].y };
+        (*point_count)++;
+        current = vertices[start].predecessor[current]; 
+    }
+
+    if (current == start) {
+        path_points[*point_count] = (Point){ vertices[start].x, vertices[start].y };
+        (*point_count)++;
+    }
+
+    return *point_count;
 }

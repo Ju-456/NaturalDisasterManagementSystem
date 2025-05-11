@@ -19,8 +19,8 @@ bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[]
 
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads);
 void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road matrix[][MAX_VERTICES], Road roads[], int num_roads);
-
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
+void draw_travel_effects(int num_vertices, Vertex vertices[], int index);
 
 void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads,Texture2D transition_texture, Texture2D grass_texture, const char *message, Road matrix[][MAX_VERTICES], int order_for_intervention);
 
