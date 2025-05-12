@@ -13,40 +13,38 @@ void count_vertex_degree(Vertex vertices[], Road matrix[][MAX_VERTICES], int num
     }
 }
 
-// respect of the lexicographic order, if A = 3 and C = 3, A > C.
-void sort_vertices(Vertex vertices[], int num_vertices) {
-    for (int i = 0; i < num_vertices - 1; i++) {
-        for (int j = i + 1; j < num_vertices; j++) {
-            // Sort by degree first, then by id lexicographically
-            if (vertices[i].degree < vertices[j].degree || 
-                (vertices[i].degree == vertices[j].degree && strcmp(vertices[i].id, vertices[j].id) > 0)) {
-                Vertex temp = vertices[i];
-                vertices[i] = vertices[j];
-                vertices[j] = temp;
-            }
-        }
-    }
-}
-
 void init_vertex_characteristics(Vertex vertices[], Road matrix[][MAX_VERTICES], int num_vertices) {
     count_vertex_degree(vertices, matrix, num_vertices);
     
-    // Sort the vertices by degree and lexicographically
-    sort_vertices(vertices, num_vertices);
+    int indices[MAX_VERTICES];
+    for (int i = 0; i < num_vertices; i++) {
+        indices[i] = i;
+    }
+
+    srand(time(NULL));
+    for (int i = num_vertices - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = indices[i];
+        indices[i] = indices[j];
+        indices[j] = temp;
+    }
 
     int hospitals_count = num_vertices * 0.2;
     int warehouses_count = num_vertices * 0.2;
 
     for (int i = 0; i < num_vertices; i++) {
-        // Assigning types and storage for each vertex
-        if (i < hospitals_count) {
-            vertices[i].type = 1; // hospital
-        } else if (i >= num_vertices - warehouses_count) {
-            vertices[i].type = 2; // warehouse
-        } else {
-            vertices[i].type = 0; // city
-        }
+        vertices[i].type = 0; // default: city
+    }
 
+    for (int i = 0; i < hospitals_count; i++) {
+        vertices[indices[i]].type = 1; // hospital
+    }
+
+    for (int i = hospitals_count; i < hospitals_count + warehouses_count; i++) {
+        vertices[indices[i]].type = 2; // warehouse
+    }
+
+    for (int i = 0; i < num_vertices; i++) {
         vertices[i].storage_capacity = vertices[i].degree * 2;
     }
 }
