@@ -30,7 +30,7 @@ void init_vertex_characteristics(Vertex vertices[], Road matrix[][MAX_VERTICES],
     }
 
     int hospitals_count = num_vertices * 0.2;
-    int warehouses_count = num_vertices * 0.2;
+    int warehouses_count = num_vertices * 0.15;
 
     for (int i = 0; i < num_vertices; i++) {
         vertices[i].type = 0; // default: city

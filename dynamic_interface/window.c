@@ -382,7 +382,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         // Earthquake
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             transition_window(transition_texture, grass_texture, "Be careful!\nThe earthquake is near...");
-            earthquake(num_vertices, matrix);
+            earthquake(num_vertices, matrix, num_roads);
         }
 
         // Show states
@@ -456,7 +456,6 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         return;
     }
 
-    // transition_window(transition_texture, grass_texture, "This is the graph \nbefore the earthquake..."); 
     load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
 
     while (!WindowShouldClose()) {

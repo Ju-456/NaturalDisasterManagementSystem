@@ -65,7 +65,7 @@ void read_id_from_json(const char *full_path_json, Vertex vertices[], int *num_v
 void load_graph_from_json(const char *full_path_json, int *num_vertices, Vertex vertices[], Road roads[], int *num_roads);
 
 // Earthsquake's part
-int earthquake (int num_vertices, Road matrix[][MAX_VERTICES]);
+int earthquake (int num_vertices, Road matrix[][MAX_VERTICES], int num_roads);
 
 //shortest path part
 int verif(int *isMarked, int num_vertices);
