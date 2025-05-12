@@ -1,10 +1,11 @@
 #include "graph.h"
 #include "travel.h"
+#include "road.h"
 
 void init_city_need(int num_vertices,Road matrix[][MAX_VERTICES],Vertex vertices[MAX_VERTICES]){
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
-            if (matrix[i][j].state == 1 ||matrix[i][j].state == 2){
+            if ((matrix[i][j].state == 1 || matrix[i][j].state == 2) && vertices[i].type == 0){ // can't be a hopital or warehouse
                 vertices[i].need = 1; // in the end of the process, vertices[i].need == 1
             }
         }
@@ -14,7 +15,7 @@ void init_city_need(int num_vertices,Road matrix[][MAX_VERTICES],Vertex vertices
 void init_type_of_issue(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]){
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
-            if (matrix[i][j].state == 1 ||matrix[i][j].state == 2){
+            if ((matrix[i][j].state == 1 || matrix[i][j].state == 2) && vertices[i].type == 0){
                 vertices[i].issue = (rand() % 2) + 1; // 1 = hopital or 2 = warehousse
             }
         }
@@ -46,29 +47,39 @@ void init_travel_time(int num_vertices, Road matrix[][MAX_VERTICES]) {
     }
 }
 
-void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES]) {
+void display_info_travel(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[MAX_VERTICES], Road roads[], int num_roads) {
     printf("=== City Information ===\n");
     for (int i = 0; i < num_vertices; i++) {
-        if ((vertices[i].need = 1) && (vertices[i].issue != 0)){
+        if ((vertices[i].need == 1) && (vertices[i].issue != 0)) {
             printf("City %d: need = %d, issue = %d\n", i, vertices[i].need, vertices[i].issue);
         }
     }
 
     printf("\n=== Road Information ===\n");
+    init_roads_id(vertices, roads, num_roads);
+
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
             if (matrix[i][j].state == 1 || matrix[i][j].state == 2) {
-                int time = matrix[i][j].travel_time;
-                int hours = time / 60;
-                int minutes = time % 60;
+                for (int k = 0; k < num_roads; k++) {
+                    if ((roads[k].start == i && roads[k].end == j) || 
+                        (roads[k].start == j && roads[k].end == i)) {
 
-                printf("Road from %d to %d: state = %d, capacity = %d, travel time = %dh%02d\n", 
-                       i, j, matrix[i][j].state, matrix[i][j].road_capacity, hours, minutes);
+                        int time = matrix[i][j].travel_time;
+                        int hours = time / 60;
+                        int minutes = time % 60;
+
+                        printf("Road (%s) from %d to %d: state = %d, capacity = %d, travel time = %dh%02d\n", 
+                               roads[k].id, i, j, matrix[i][j].state, matrix[i][j].road_capacity, hours, minutes);
+                        break; 
+                    }
+                }
             }
         }
     }
     printf("\n\n");
 }
+
 
 int research_closest_vertex(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], int start, int target_type) {
     dijkstra(num_vertices, matrix, vertices, start);

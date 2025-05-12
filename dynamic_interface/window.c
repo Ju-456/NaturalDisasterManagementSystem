@@ -192,19 +192,17 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
 
     double elapsed = GetTime() - start_time[index];
 
-    // display of the intervention
     int text_width = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id), 18);
-    DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY); 
-    DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY); 
+    DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY);
+    DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY);
     DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id), 20, 20, 18, BLACK);
 
-    // Reconstruction of Path with Dijstra
-    Point route_points[MAX_VERTICES];  
+    Point route_points[MAX_VERTICES];
     int point_count = build_path_points(num_vertices, vertices, index, closest_vertex, route_points, &point_count);
 
     if (point_count == 0) {
-        DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY); 
-        DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY); 
+        DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY);
+        DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY);
         DrawText("Path doesn't exist", 20, 50, 18, ORANGE);
         vertices[index].issue = 0;
         vertices[index].need = 0;
@@ -212,10 +210,21 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
         return;
     }
 
-    // Animation part
     float total_duration = 3.0f;
     float step_spacing = 0.2f;
 
+    bool reverse_animation = false;
+
+    if ((vertices[index].type == 1 || vertices[index].type == 2) && vertices[closest_vertex].type == 0) { //if h/w -> city
+        reverse_animation = true;
+    } else if (vertices[index].type == 0 && vertices[closest_vertex].type == 0) { // no display, this case shouldn't exist normally
+        vertices[index].issue = 0;
+        vertices[index].need = 0;
+        animation_started[index] = false;
+        return;
+    }
+
+    // === Animation ===
     if (elapsed < total_duration) {
         int steps = (int)(elapsed / step_spacing);
         for (int s = 0; s <= steps; s++) {
@@ -227,12 +236,20 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
             float f = p - k;
             if (k >= point_count - 1) k = point_count - 2;
 
-            float x = route_points[k].x + f * (route_points[k + 1].x - route_points[k].x);
-            float y = route_points[k].y + f * (route_points[k + 1].y - route_points[k].y);
+            float x, y;
+
+            if (reverse_animation) {
+                x = route_points[point_count - 1 - k].x + f * (route_points[point_count - 2 - k].x - route_points[point_count - 1 - k].x);
+                y = route_points[point_count - 1 - k].y + f * (route_points[point_count - 2 - k].y - route_points[point_count - 1 - k].y);
+            } else {
+                x = route_points[k].x + f * (route_points[k + 1].x - route_points[k].x);
+                y = route_points[k].y + f * (route_points[k + 1].y - route_points[k].y);
+            }
+
             DrawCircle(x, y, 4, ORANGE);
         }
     } else if (elapsed < 6.0f) {
-        Point last = route_points[point_count - 1];
+        Point last = reverse_animation ? route_points[0] : route_points[point_count - 1];
         DrawCircle(last.x, last.y, 8, GREEN);
     } else {
         vertices[index].issue = 0;
@@ -397,7 +414,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
             init_city_need(num_vertices, matrix, vertices);
             init_type_of_issue(num_roads, matrix, vertices);        
             init_travel_time(num_vertices, matrix);                 
-            display_info_travel(num_vertices, matrix, vertices);   
+            display_info_travel(num_vertices, matrix, vertices, roads, num_roads);   
             travel_to_city(num_vertices, matrix, vertices, &order_for_intervention);
             update_closest_vertices(num_vertices, vertices);
 
