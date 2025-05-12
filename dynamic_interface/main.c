@@ -2,13 +2,18 @@
 #include "vertex.h"
 #include "window.h"
 #include "travel.h"
+#include "vertexGroup.h"
 
 int main() {
     Road matrix[MAX_VERTICES][MAX_VERTICES];
+    Road matrix_inverse[MAX_VERTICES][MAX_VERTICES];
+    int result[MAX_VERTICES];
+    int result_inverse[MAX_VERTICES];
 
     Vertex vertices[MAX_VERTICES];
     int num_vertices = 0; // in the top of the txt
     int hospitals = 0, cities = 0, warehouses = 0;
+    int pos = 0;
 
     int num_roads = 0;
     Road roads[MAX_VERTICES];
@@ -33,7 +38,19 @@ int main() {
         num_roads = count_roads(roads, matrix, num_vertices);
         // printf("Road states matrix before the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
+        
+        // VertexGroup's part
+        depth_first_search_full(num_vertices, matrix);
+        init_matrix_1d_zero(num_vertices, result);
+        init_matrix_1d_zero(num_vertices, result_inverse);
+        init_matrix_2d_zero(num_vertices, matrix_inverse);
 
+        left_right_root_full(num_vertices, matrix, result, &pos);
+        inverse_matrix_1d_full(num_vertices, result, result_inverse);
+        inverse_matrix_2d_full(num_vertices, matrix, matrix_inverse);
+        depth_first_search_inverse(num_vertices, matrix, matrix_inverse, result_inverse);
+        read_matrix_2d_cfc(num_vertices, matrix);
+        
         int order_for_intervention = 1;
 
         // printf("Road states matrix after the earthquake:\n");

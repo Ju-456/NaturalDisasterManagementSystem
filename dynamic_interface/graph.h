@@ -37,6 +37,7 @@ typedef struct {
 
 typedef struct {
     char id[MAX_VERTICES];
+    int cfc_group;
     int start;         
     int end;           
     int state;         // 1: bad, 2: good, 3: very
