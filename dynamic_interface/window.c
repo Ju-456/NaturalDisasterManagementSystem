@@ -450,9 +450,9 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Map of Graph 1 :");
     SetTargetFPS(60);
 
-    road_texture = LoadTexture("City_Tilemap/City_Transparent.png");
-    Texture2D grass_texture = LoadTexture("City_Tilemap/grass_retro1.png");
-    Texture2D transition_texture = LoadTexture("City_Tilemap/transition_texture.png");
+    road_texture = LoadTexture("Assets/City_Transparent.png");
+    Texture2D grass_texture = LoadTexture("Assets/grass_retro1.png");
+    Texture2D transition_texture = LoadTexture("Assets/transition_texture.png");
     AppMode mode = MODE_GRAPH;
     int selected_index = -1;
     bool menu_open = false;
