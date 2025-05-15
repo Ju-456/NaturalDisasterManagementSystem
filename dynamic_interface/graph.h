@@ -74,4 +74,6 @@ void dijkstra(int num_vertices, Road matrix[][MAX_VERTICES], Vertex vertices[], 
 void display_dijkstra(int num_vertices, Vertex vertices[], int start);
 int build_path_points(int num_vertices, Vertex vertices[], int start, int target, Point* path_points, int* point_count);
 
+void edmonds(Road matrix[][MAX_VERTICES], Vertex vertices[], int n); 
+
 #endif
