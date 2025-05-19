@@ -2,8 +2,8 @@
 #define GRAPH_H
 
 #define MAX_VERTICES 100
-#define FILENAME_TXT "graphL1.txt"
-#define FILENAME_JSON "graphL1.json"
+#define FILENAME_TXT "graphXL.txt"
+#define FILENAME_JSON "graphXL.json"
 #define INF INT_MAX
 
 #include <stdio.h>
@@ -53,10 +53,19 @@ typedef struct {
 } Vehicle;
 
 typedef struct { float x, y; } Point;
-
 #ifndef PATH_MAX
 #define PATH_MAX 4096 
 #endif
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+#define TOLERANCE 20.0f
+
+typedef enum {
+    MODE_GRAPH,
+    MODE_VERTEX_DETAILS,
+    MODE_ROAD_DETAILS
+} AppMode;
 
 // General functions
 void build_path(char *full_path, const char *base_path, const char *filename);

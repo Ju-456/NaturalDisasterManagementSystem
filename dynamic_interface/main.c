@@ -1,8 +1,13 @@
 #include "road.h"
 #include "vertex.h"
-#include "window.h"
+
 #include "travel.h"
 #include "vertexGroup.h"
+
+Texture2D road_texture;
+
+#include "window_draw_part.h"
+#include "window_general_part.h"
 
 int main() {
     Road matrix[MAX_VERTICES][MAX_VERTICES];
@@ -55,7 +60,7 @@ int main() {
 
         // printf("Road states matrix after the earthquake:\n");
         // display_roads_state_matrix(matrix, num_vertices);
-        edmonds(matrix, vertices, num_vertices);
+        // edmonds(matrix, vertices, num_vertices);
         init_window_custom(full_path_json, num_vertices, vertices, roads, num_roads, matrix, order_for_intervention);
         
         init_roads_id(vertices, roads, num_roads);

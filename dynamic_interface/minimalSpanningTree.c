@@ -1,7 +1,4 @@
 #include "graph.h"
-#include <time.h>
-#include <stdio.h>
-
 
 // Vérification de la source unique (s) dans le graphe
 int verifS(int n, Road matrix[][MAX_VERTICES]){
