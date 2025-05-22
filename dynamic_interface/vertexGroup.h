@@ -15,6 +15,8 @@ void depth_first_search(int num_vertices, Road matrix[][MAX_VERTICES], int mat_v
 void depth_first_search_full(int num_vertices, Road matrix[][MAX_VERTICES]); // parcours en profondeur du graphe en récursif avec une boucle pour faire toutes les possibilites
 void left_right_root(int num_vertices, Road matrix[][MAX_VERTICES], int visited[num_vertices], int index, int result[MAX_VERTICES], int *pos); // remontee gauche droite racine (récursif)
 void left_right_root_full(int num_vertices, Road matrix[][MAX_VERTICES], int result[MAX_VERTICES], int *pos); // remontee gauche droite racine en entier (récursif)
-void depth_first_search_inverse(int num_vertices, Road matrix[][MAX_VERTICES], Road matrix_inverse[][MAX_VERTICES], int result_inverse[MAX_VERTICES]); // affichage des differentes composantes fortement connexe (les groupes de sommets)
+// void depth_first_search_inverse(int num_vertices, Road matrix[][MAX_VERTICES], Road matrix_inverse[][MAX_VERTICES], int result_inverse[MAX_VERTICES]); // affichage des differentes composantes fortement connexe (les groupes de sommets)
+void dfs_cfc(int num_vertices, Road matrix_inverse[][MAX_VERTICES], int visited[], int index, int cfc_group_id, Road matrix[][MAX_VERTICES]);
+void depth_first_search_inverse(int num_vertices, Road matrix[][MAX_VERTICES], Road matrix_inverse[][MAX_VERTICES], int finishing_order[MAX_VERTICES]);
 
 #endif

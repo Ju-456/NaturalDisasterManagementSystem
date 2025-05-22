@@ -4,7 +4,11 @@
 #include "travel.h"
 #include "vertexGroup.h"
 
+#include "texture.h"
 Texture2D road_texture;
+Color group_colors[MAX_GROUP_COLORS] = {
+    RED, BLUE, GREEN, ORANGE, PURPLE, YELLOW, PINK, BROWN, DARKGREEN, SKYBLUE
+};
 
 #include "window_draw_part.h"
 #include "window_general_part.h"

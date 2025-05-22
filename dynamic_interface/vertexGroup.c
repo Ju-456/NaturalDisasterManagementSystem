@@ -137,7 +137,7 @@ void left_right_root_full(int num_vertices, Road matrix[][MAX_VERTICES], int res
     }
   }
 }
-
+/*
 void depth_first_search_inverse(int num_vertices, Road matrix[][MAX_VERTICES], Road matrix_inverse[][MAX_VERTICES], int result_inverse[MAX_VERTICES]) // affichage des differentes composantes fortement connexe (les groupes de sommets)
 {
   int mark[num_vertices];
@@ -174,4 +174,29 @@ void depth_first_search_inverse(int num_vertices, Road matrix[][MAX_VERTICES], R
     i++;
   }
   //printf("\nIl y a donc %d groupes de sommets dans ce graphe.\n",component_it++);
+}
+*/
+void dfs_cfc(int num_vertices, Road matrix_inverse[][MAX_VERTICES], int visited[], int index, int cfc_group_id, Road matrix[][MAX_VERTICES]) {
+    visited[index] = 1;
+    matrix[index][index].cfc_group = cfc_group_id;
+    printf("%d ", index);
+    for (int i = 0; i < num_vertices; i++) {
+        if (matrix_inverse[index][i].weight != 0 && !visited[i]) {
+            dfs_cfc(num_vertices, matrix_inverse, visited, i, cfc_group_id, matrix);
+        }
+    }
+}
+
+void depth_first_search_inverse(int num_vertices, Road matrix[][MAX_VERTICES], Road matrix_inverse[][MAX_VERTICES], int finishing_order[MAX_VERTICES]) {
+    int visited[MAX_VERTICES] = {0};
+    int cfc_group_id = 0;
+
+    for (int i = num_vertices - 1; i >= 0; i--) {
+        int index = finishing_order[i];
+        if (!visited[index]) {
+            printf("\nThe vertex's group %d contain the composante : ", cfc_group_id);
+            dfs_cfc(num_vertices, matrix_inverse, visited, index, cfc_group_id, matrix);
+            cfc_group_id++;
+        }
+    }
 }
