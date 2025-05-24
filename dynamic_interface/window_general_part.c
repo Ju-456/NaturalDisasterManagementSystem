@@ -204,6 +204,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
             }
         }
 
+        // Minimal Spanning Tree toggle
         if (*show_group_vertices) {
             draw_group_of_vertices(num_vertices, matrix, vertices);
         }
@@ -212,8 +213,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
 
             int minST[MAX_VERTICES][MAX_VERTICES];
             edmonds(matrix, vertices, num_vertices, minST);
-            transition_window(transition_texture, grass_texture, "Minimal spaning tree");
-            drawMinimalSpanningTree(num_vertices, matrix, vertices, minST);
+            draw_min_spanning_tree(num_vertices, matrix, vertices, minST);
         }
     }
 
@@ -240,7 +240,7 @@ void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertic
     DrawCircle(menu_button.x + 1, menu_button.y + 15, 2, BLACK);
 
     if (menu_open) {
-        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 165, 165 };
+        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 170, 160 };
 
         DrawRectangleRec(menu_rect, LIGHTGRAY);
 
@@ -248,7 +248,7 @@ void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertic
         DrawText("State's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
         DrawText("Intervention", menu_rect.x + 25, menu_rect.y + 70, 12, BLACK);
         DrawText("Group Accessible Areas", menu_rect.x + 25, menu_rect.y + 100, 12, BLACK);
-        DrawText("Min Spanning Tree ", menu_rect.x + 25, menu_rect.y + 130, 12, BLACK);
+        DrawText("Minimal Spanning Tree", menu_rect.x + 25, menu_rect.y + 130, 12, BLACK);
 
         Rectangle checkbox1 = { menu_rect.x + 5, menu_rect.y + 10, 14, 14 };
         Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
@@ -350,7 +350,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         }
 
         if(showMinST){
-            drawMinimalSpanningTree(num_vertices, matrix, vertices, minST);
+            draw_min_spanning_tree(num_vertices, matrix, vertices, minST);
         }
 
         if (mode == MODE_GRAPH) {

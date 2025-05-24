@@ -302,16 +302,16 @@ void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Verte
     }
 }
 
-void DrawDashedLineEx(Vector2 start, Vector2 end, float thickness, float dashLength, Color color) {
+void draw_dashed_line_ex(Vector2 start, Vector2 end, float thickness, float dashLength, Color color) {
     Vector2 direction = Vector2Subtract(end, start);
-    float length = Vector2Length(direction);
+    float totalLength = Vector2Length(direction);
     direction = Vector2Normalize(direction);
 
     float drawn = 0.0f;
     bool draw = true;
 
-    while (drawn < length) {
-        float segmentLength = fminf(dashLength, length - drawn);
+    while (drawn < totalLength) {
+        float segmentLength = fminf(dashLength, totalLength - drawn);
         Vector2 segStart = Vector2Add(start, Vector2Scale(direction, drawn));
         Vector2 segEnd = Vector2Add(segStart, Vector2Scale(direction, segmentLength));
 
@@ -324,14 +324,28 @@ void DrawDashedLineEx(Vector2 start, Vector2 end, float thickness, float dashLen
     }
 }
 
-void drawMinimalSpanningTree(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices, int roads[][MAX_VERTICES]) { 
+void draw_min_spanning_tree(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices, int roads[][MAX_VERTICES]) {
+    int screen_width = GetScreenWidth();
+    int screen_height = GetScreenHeight();
+    float scale = fminf((float)screen_width / SCREEN_WIDTH, (float)screen_height / SCREEN_HEIGHT);
+    float offsetX = (screen_width - SCREEN_WIDTH * scale) / 2.0f;
+    float offsetY = (screen_height - SCREEN_HEIGHT * scale) / 2.0f;
+
+    Vertex scaled_vertices[num_vertices];
+    for (int i = 0; i < num_vertices; i++) {
+        scaled_vertices[i] = vertices[i];
+        scaled_vertices[i].x = vertices[i].x * scale + offsetX;
+        scaled_vertices[i].y = vertices[i].y * scale + offsetY;
+    }
+
     for (int i = 0; i < num_vertices; i++) {
         for (int j = 0; j < num_vertices; j++) {
-            if (roads[j][i] == 1){
-                Vector2 start = { vertices[i].x, vertices[i].y };
-                Vector2 end = { vertices[j].x, vertices[j].y };
+            if (roads[j][i] == 1) {
+                Vector2 start = { scaled_vertices[i].x, scaled_vertices[i].y };
+                Vector2 end = { scaled_vertices[j].x, scaled_vertices[j].y };
 
-                DrawDashedLineEx(start, end, 3.0f, 10.0f, BLUE); // épaisseur = 3, tirets de 10 px
+                draw_dashed_line_ex(start, end, 3.0f, 10.0f, (Color){100, 230, 100, 255});
+                // draw_dashed_line_ex(start, end, 3.0f, 10.0f, BLUE);
             }
         }
     }
