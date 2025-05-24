@@ -131,19 +131,20 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
     }
 }
 
-void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads, 
-    bool *show_group_vertices, Texture2D transition_texture, Texture2D grass_texture, const char *message, 
-    Road matrix[][MAX_VERTICES], int order_for_intervention) {
-    
-    Rectangle menu_button = { 10, 10, 30, 20 };
-    static double timer = 0;
-    static int current_intervention_index = 0; // to treat issue step by step
+void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_vertices, int num_vertices, Vertex *vertices, Road roads[], int num_roads, 
+                         Texture2D transition_texture, Texture2D grass_texture, Road matrix[][MAX_VERTICES], int *order_for_intervention) {
+
+    static int current_intervention_index = 0;
     static bool interventions_initialized = false;
     static bool group_display_initialized = false;
 
+    Rectangle menu_button = { 10, 10, 30, 20 };
+    static double timer = 0;
+
+    // Toggle menu open/close
     if (CheckCollisionPointRec(GetMousePosition(), menu_button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         *menu_open = !(*menu_open);
-        timer = GetTime(); 
+        timer = GetTime();
     }
 
     if (*menu_open && GetTime() - timer > 3.0) {
@@ -154,24 +155,12 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         }
     }
 
-    DrawCircle(menu_button.x + 1, menu_button.y + 5, 2, BLACK);
-    DrawCircle(menu_button.x + 1, menu_button.y + 10, 2, BLACK);
-    DrawCircle(menu_button.x + 1, menu_button.y + 15, 2, BLACK);
-
-    if (*menu_open) { // un button = 30 pixels of lenght and 
+    if (*menu_open) {
         Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 165, 160 };
-        DrawRectangleRec(menu_rect, LIGHTGRAY);
-        DrawText("Earthquake", menu_rect.x + 25, menu_rect.y + 10, 12, BLACK);
-        DrawText("State's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
-        DrawText("Intervention", menu_rect.x + 25, menu_rect.y + 70, 12, BLACK);
-        DrawText("Group Accessible Areas", menu_rect.x + 25, menu_rect.y + 100, 12, BLACK);
-        DrawText("Mission n*4 ", menu_rect.x + 25, menu_rect.y + 130, 12, BLACK); // to change 
-
         Rectangle checkbox1 = { menu_rect.x + 5, menu_rect.y + 10, 14, 14 };
         Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
         Rectangle checkbox3 = { menu_rect.x + 5, menu_rect.y + 70, 14, 14 };
         Rectangle checkbox4 = { menu_rect.x + 5, menu_rect.y + 100, 14, 14 };
-        Rectangle checkbox5 = { menu_rect.x + 5, menu_rect.y + 130, 14, 14 };
 
         // Earthquake
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -179,9 +168,8 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
             earthquake(num_vertices, matrix, num_roads);
         }
 
-        // Show state's roads
+        // Show state's roads toggle
         if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
             *show_states = !(*show_states);
         }
 
@@ -189,41 +177,80 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         if (CheckCollisionPointRec(GetMousePosition(), checkbox3) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             transition_window(transition_texture, grass_texture, "Interventions will be \nmade in the order\nof priority established");
             init_city_need(num_vertices, matrix, vertices);
-            init_type_of_issue(num_roads, matrix, vertices);        
-            init_travel_time(num_vertices, matrix);    
-                         
-            display_info_travel(num_vertices, matrix, vertices, roads, num_roads);   
-            travel_to_city(num_vertices, matrix, vertices, &order_for_intervention);
+            init_type_of_issue(num_roads, matrix, vertices);
+            init_travel_time(num_vertices, matrix);
+            display_info_travel(num_vertices, matrix, vertices, roads, num_roads);
+            travel_to_city(num_vertices, matrix, vertices, order_for_intervention);
             update_closest_vertices(num_vertices, vertices);
 
             current_intervention_index = 0;
             interventions_initialized = true;
         }
 
-        // Group Accessible Areas
-        if (CheckCollisionPointRec(GetMousePosition(), checkbox4) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {  
-        *show_group_vertices = !(*show_group_vertices);
+        // Group Accessible Areas toggle
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox4) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            *show_group_vertices = !(*show_group_vertices);
 
-        if (!group_display_initialized) {
-            //transition_window(transition_texture, grass_texture, "These are\nGroup Accessible Areas");
+            if (!group_display_initialized) {
+                int finishing_order[MAX_VERTICES];
+                int pos = 0;
+                left_right_root_full(num_vertices, matrix, finishing_order, &pos);
 
-            int finishing_order[MAX_VERTICES];
-            int pos = 0;
-            left_right_root_full(num_vertices, matrix, finishing_order, &pos);
+                Road matrix_inverse[MAX_VERTICES][MAX_VERTICES];
+                inverse_matrix_2d_full(num_vertices, matrix, matrix_inverse);
 
-            Road matrix_inverse[MAX_VERTICES][MAX_VERTICES];
-            inverse_matrix_2d_full(num_vertices, matrix, matrix_inverse);
-
-            depth_first_search_inverse(num_vertices, matrix, matrix_inverse, finishing_order);
-
-            group_display_initialized = true;
+                depth_first_search_inverse(num_vertices, matrix, matrix_inverse, finishing_order);
+                group_display_initialized = true;
+            }
         }
-    }
-        
-        // Show Group Accessible Areas
+
+        if (*show_states) {
+            draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
+        }
+
         if (*show_group_vertices) {
             draw_group_of_vertices(num_vertices, matrix, vertices);
         }
+    }
+
+    if (interventions_initialized) {
+            while (current_intervention_index < num_vertices) {
+                if (vertices[current_intervention_index].need == 1 && vertices[current_intervention_index].closest != -1) {
+                    draw_travel_effects(num_vertices, vertices, current_intervention_index);
+                    break; // one animation at a time per frame
+                }
+                current_intervention_index++;
+            }
+            if (current_intervention_index >= num_vertices) {
+                interventions_initialized = false;
+            }
+    }
+}
+
+void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertices, int num_vertices, Vertex *vertices, Road matrix[][MAX_VERTICES]) {
+    Rectangle menu_button = { 10, 10, 30, 20 };
+
+    // The 3 black points button
+    DrawCircle(menu_button.x + 1, menu_button.y + 5, 2, BLACK);
+    DrawCircle(menu_button.x + 1, menu_button.y + 10, 2, BLACK);
+    DrawCircle(menu_button.x + 1, menu_button.y + 15, 2, BLACK);
+
+    if (menu_open) {
+        Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 165, 165 };
+
+        DrawRectangleRec(menu_rect, LIGHTGRAY);
+
+        DrawText("Earthquake", menu_rect.x + 25, menu_rect.y + 10, 12, BLACK);
+        DrawText("State's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
+        DrawText("Intervention", menu_rect.x + 25, menu_rect.y + 70, 12, BLACK);
+        DrawText("Group Accessible Areas", menu_rect.x + 25, menu_rect.y + 100, 12, BLACK);
+        DrawText("Mission n*4 ", menu_rect.x + 25, menu_rect.y + 130, 12, BLACK); // Leo will change it
+
+        Rectangle checkbox1 = { menu_rect.x + 5, menu_rect.y + 10, 14, 14 };
+        Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
+        Rectangle checkbox3 = { menu_rect.x + 5, menu_rect.y + 70, 14, 14 };
+        Rectangle checkbox4 = { menu_rect.x + 5, menu_rect.y + 100, 14, 14 };
+        Rectangle checkbox5 = { menu_rect.x + 5, menu_rect.y + 130, 14, 14 };
 
         DrawRectangleRec(checkbox1, RAYWHITE);
         DrawRectangleRec(checkbox2, RAYWHITE);
@@ -231,22 +258,10 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         DrawRectangleRec(checkbox4, RAYWHITE);
         DrawRectangleRec(checkbox5, RAYWHITE);
 
-        if (*show_states) DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
-        if (*show_group_vertices) DrawText("X", checkbox4.x + 2, checkbox4.y - 2, 14, GREEN);
-    }
+        // if X (true) else (no green X)
+        if (show_states) DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
+        if (show_group_vertices) DrawText("X", checkbox4.x + 2, checkbox4.y - 2, 14, GREEN);
 
-    if (interventions_initialized) {
-        while (current_intervention_index < num_vertices) {
-            if (vertices[current_intervention_index].need == 1 && vertices[current_intervention_index].closest != -1) {
-                draw_travel_effects(num_vertices, vertices, current_intervention_index);
-                break; // only one display per frame
-            }
-            current_intervention_index++;
-        }
-
-        if (current_intervention_index >= num_vertices) {
-            interventions_initialized = false;
-        }
     }
 }
 
@@ -260,21 +275,21 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     Texture2D grass_texture = LoadTexture("Assets/grass_retro1.png");
     Texture2D transition_texture = LoadTexture("Assets/transition_texture.png");
     AppMode mode = MODE_GRAPH;
+
+    // Values for the button
     int selected_index = -1;
     bool menu_open = false;
     bool show_states = false;
     bool show_group_vertices = false;
 
     if (road_texture.id == 0) {
-            printf("Route texture loading error.\n");
-            return;
+        printf("Route texture loading error.\n");
+        return;
     }
-
     if (grass_texture.id == 0) {
         printf("Background texture loading error.\n");
         return;
     }
-
     if (transition_texture.id == 0 || grass_texture.id == 0) {
         printf("Erreur de chargement de texture.\n");
         return;
@@ -304,32 +319,33 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        // the adapted display
         for (int x = 0; x < screen_width; x += grass_texture.width) {
             for (int y = 0; y < screen_height; y += grass_texture.height) {
                 DrawTexture(grass_texture, x, y, WHITE);
             }
         }
         
-        // To adapt the size if the user click "full screen"
         draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, scaled_vertices);
-        button_click(&menu_open, &show_states, num_vertices, vertices, roads, num_roads, &show_group_vertices, transition_texture, 
-            grass_texture, NULL, matrix, order_for_intervention);
+
+        // execution of the logik's buttons
+         buttons_click_logic(&menu_open, &show_states, &show_group_vertices, num_vertices, vertices, roads, num_roads,
+                        transition_texture, grass_texture, matrix, &order_for_intervention);
+        // draw the design of buttons
+        buttons_click_draw(menu_open, show_states, show_group_vertices, num_vertices, vertices, matrix);
+
 
         if (show_states) {
             draw_state_for_existing_roads(num_vertices, scaled_vertices, matrix, roads, num_roads);
         }
 
         if (show_group_vertices) {
-        draw_group_of_vertices(num_vertices, matrix, vertices);
+            draw_group_of_vertices(num_vertices, matrix, vertices);
         }
 
-        // the user didn't click on a vertex or road
         if (mode == MODE_GRAPH) {
             Vector2 mouse = GetMousePosition();
         
-            // Right click for vertices
             if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
                 for (int i = 0; i < num_vertices; i++) {
                     float dx = mouse.x - scaled_vertices[i].x;
@@ -342,7 +358,6 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
                 }
             }
         
-            // Left click for roads
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 for (int r = 0; r < num_roads; r++) {
                     Vector2 p1 = {scaled_vertices[roads[r].start].x, scaled_vertices[roads[r].start].y};
