@@ -204,10 +204,6 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
             }
         }
 
-        if (*show_states) {
-            draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
-        }
-
         if (*show_group_vertices) {
             draw_group_of_vertices(num_vertices, matrix, vertices);
         }
@@ -333,7 +329,6 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
                         transition_texture, grass_texture, matrix, &order_for_intervention);
         // draw the design of buttons
         buttons_click_draw(menu_open, show_states, show_group_vertices, num_vertices, vertices, matrix);
-
 
         if (show_states) {
             draw_state_for_existing_roads(num_vertices, scaled_vertices, matrix, roads, num_roads);
