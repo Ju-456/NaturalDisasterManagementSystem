@@ -25,66 +25,73 @@ int verifS(int n, Road matrix[][MAX_VERTICES]){
     return s;
 }
 
-// Implémentation de l'algorithme d'Edmonds
-void edmonds(Road matrix[][MAX_VERTICES], Vertex vertices[], int num_vertices){
-    int s = verifS(num_vertices, matrix);
-    if(s == -1){
-        printf("Il n'existe pas de chemin vers tous les sommets dans le graphe.\n");
-        return;
+int verifP(int num_vertices, int roads[][MAX_VERTICES], int s){
+    int compteur;
+    for(int i = 0; i<num_vertices; i++){
+        compteur = 0;
+        for(int j =0; j<num_vertices; j++){
+            if(roads[j][i] == 1){
+                compteur++;
+            }
+        }
+        if(compteur == 0){
+            return -1;
+        }
+    }
+    return 0;
+}
+
+int dfs(int current, int roads[][MAX_VERTICES], int visited[], int marked[], int num_vertices) {
+    if(visited[current] == 1 || marked[current] == 1){
+        return 1;
+    }
+    visited[current] = 1;
+    marked[current] = 1;
+    for(int i = 0; i<num_vertices; i++){
+        if(roads[current][i] == 1){
+            if(dfs(i, roads, visited, marked, num_vertices)){
+                return 1;
+            }
+        }
+    }
+        marked[current] = 0;
+    return 0;
+}
+
+void edmonds(Road matrix[][MAX_VERTICES], Vertex vertices[], int num_vertices, int roads[][MAX_VERTICES]) {
+    int i, j, root = 0;  // Choix arbitraire de la racine, ici 0
+
+    // Initialiser la matrice roads à 0
+    for (i = 0; i < num_vertices; i++)
+        for (j = 0; j < num_vertices; j++)
+            roads[i][j] = 0;
+
+    // Tableau pour stocker la meilleure arête entrante par sommet
+    int min_from[MAX_VERTICES];
+    int min_incoming[MAX_VERTICES];
+
+    for (i = 0; i < num_vertices; i++) {
+        min_incoming[i] = INF;
+        min_from[i] = -1;
     }
 
-    int isMarked[num_vertices];
-    int roads[num_vertices][num_vertices];
-    int min = INF;
-    int k = -1;
-    for(int i = 0; i<num_vertices; i++){
-        dijkstra(num_vertices, matrix, vertices, i);
-        isMarked[i] = 0;
-    }
-    for(int i = 0; i<num_vertices; i++){
-        for(int j = 0; j<num_vertices; j++){
-            roads[i][j] = 0;
-        }
-    }
-    for(int i = 0; i<num_vertices; i++){
-        for(int j = 0; j<num_vertices; j++){
-            if(vertices[i].nextVertex[j] == i && vertices[i].shortestPath[j] < min && isMarked[j] != 1){
-                k = j;
-                min = vertices[i].shortestPath[j];
+    // Étape 1 : Trouver pour chaque sommet l'arête entrante minimale (sauf racine)
+    for (j = 0; j < num_vertices; j++) {
+        if (j == root) continue;
+        for (i = 0; i < num_vertices; i++) {
+            if (matrix[i][j].weight > 0 && matrix[i][j].weight < min_incoming[j]) {
+                min_incoming[j] = matrix[i][j].weight;
+                min_from[j] = i;
             }
         }
-        if(k != -1){
-            roads[i][k] = 1;
-            isMarked[k] = 1;
-        }
-        k = -1;
-        min = INF;
     }
-    int test = 0;
-    for(int i = 0; i<num_vertices; i++){
-        min = INF;
-        k = -1;
-        test = 0;
-        for(int j = 0; j<num_vertices; j++){
-            if(roads[j][i] == 1){
-                test = 1;
-            }
-        }
-        if(test == 0){
-            for(int j = 0; j<num_vertices; j++){
-                if(matrix[j][i].weight != 0 && matrix[j][i].weight < min){
-                    min = matrix[j][i].weight;
-                    k = j;
-                }
-            }
-            roads[k][i] = 1;
-        }
-    }
-    for(int i = 0; i<num_vertices; i++){
-        for(int j = 0; j<num_vertices; j++){
-            if(roads[j][i] == 1){
-                printf("road from %d to %d\n", j, i);
-            }
+
+    // Étape 2 : Construire l'arbre couvrant minimal orienté sans gestion des cycles (simplifié)
+    // (Attention: ici pas de contraction de cycles)
+    for (j = 0; j < num_vertices; j++) {
+        if (j == root) continue;
+        if (min_from[j] != -1) {
+            roads[min_from[j]][j] = 1;
         }
     }
 }

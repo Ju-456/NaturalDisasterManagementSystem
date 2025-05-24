@@ -132,12 +132,11 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
 }
 
 void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_vertices, int num_vertices, Vertex *vertices, Road roads[], int num_roads, 
-                         Texture2D transition_texture, Texture2D grass_texture, Road matrix[][MAX_VERTICES], int *order_for_intervention) {
+                         Texture2D transition_texture, Texture2D grass_texture, Road matrix[][MAX_VERTICES], int *order_for_intervention, bool *showMinST) {
 
     static int current_intervention_index = 0;
     static bool interventions_initialized = false;
     static bool group_display_initialized = false;
-
     Rectangle menu_button = { 10, 10, 30, 20 };
     static double timer = 0;
 
@@ -161,6 +160,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
         Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
         Rectangle checkbox3 = { menu_rect.x + 5, menu_rect.y + 70, 14, 14 };
         Rectangle checkbox4 = { menu_rect.x + 5, menu_rect.y + 100, 14, 14 };
+        Rectangle checkbox5 = { menu_rect.x + 5, menu_rect.y + 130, 14, 14 };
 
         // Earthquake
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -207,6 +207,14 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
         if (*show_group_vertices) {
             draw_group_of_vertices(num_vertices, matrix, vertices);
         }
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox5) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            *showMinST = !(*showMinST);
+
+            int minST[MAX_VERTICES][MAX_VERTICES];
+            edmonds(matrix, vertices, num_vertices, minST);
+            transition_window(transition_texture, grass_texture, "Minimal spaning tree");
+            drawMinimalSpanningTree(num_vertices, matrix, vertices, minST);
+        }
     }
 
     if (interventions_initialized) {
@@ -240,7 +248,7 @@ void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertic
         DrawText("State's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
         DrawText("Intervention", menu_rect.x + 25, menu_rect.y + 70, 12, BLACK);
         DrawText("Group Accessible Areas", menu_rect.x + 25, menu_rect.y + 100, 12, BLACK);
-        DrawText("Mission n*4 ", menu_rect.x + 25, menu_rect.y + 130, 12, BLACK); // Leo will change it
+        DrawText("Min Spanning Tree ", menu_rect.x + 25, menu_rect.y + 130, 12, BLACK);
 
         Rectangle checkbox1 = { menu_rect.x + 5, menu_rect.y + 10, 14, 14 };
         Rectangle checkbox2 = { menu_rect.x + 5, menu_rect.y + 40, 14, 14 };
@@ -277,6 +285,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     bool menu_open = false;
     bool show_states = false;
     bool show_group_vertices = false;
+    bool showMinST = false;
 
     if (road_texture.id == 0) {
         printf("Route texture loading error.\n");
@@ -291,8 +300,11 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         return;
     }
 
-    load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
+    int minST[MAX_VERTICES][MAX_VERTICES];
+    edmonds(matrix, vertices, num_vertices, minST);
 
+    load_graph_from_json(filename, &num_vertices, vertices, roads, &num_roads);
+    
     while (!WindowShouldClose()) {
         int screen_width = GetScreenWidth();
         int screen_height = GetScreenHeight();
@@ -326,16 +338,19 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
 
         // execution of the logik's buttons
          buttons_click_logic(&menu_open, &show_states, &show_group_vertices, num_vertices, vertices, roads, num_roads,
-                        transition_texture, grass_texture, matrix, &order_for_intervention);
+                        transition_texture, grass_texture, matrix, &order_for_intervention, &showMinST);
         // draw the design of buttons
         buttons_click_draw(menu_open, show_states, show_group_vertices, num_vertices, vertices, matrix);
-
         if (show_states) {
             draw_state_for_existing_roads(num_vertices, scaled_vertices, matrix, roads, num_roads);
         }
 
         if (show_group_vertices) {
             draw_group_of_vertices(num_vertices, matrix, vertices);
+        }
+
+        if(showMinST){
+            drawMinimalSpanningTree(num_vertices, matrix, vertices, minST);
         }
 
         if (mode == MODE_GRAPH) {

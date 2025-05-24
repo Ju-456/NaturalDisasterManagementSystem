@@ -12,6 +12,7 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
 void draw_travel_effects(int num_vertices, Vertex vertices[], int index);
 void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices);
+void drawMinimalSpanningTree(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices, int roads[][MAX_VERTICES]);
 // void draw_car_travel()
 
 #endif

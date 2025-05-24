@@ -7,7 +7,7 @@
 void build_path(char *full_path, const char *base_path, const char *filename) {
     const char *home = getenv("HOME");
     if (home != NULL) {
-        snprintf(full_path, PATH_MAX, "%s/NaturalDisasterManagementSystem/%s%s", home, base_path, filename);
+        snprintf(full_path, PATH_MAX, "%s/Bureau/NaturalDisasterManagementSystem/%s%s", home, base_path, filename);
         printf("Full path: %s\n", full_path); // debug
     } else {
         fprintf(stderr, "Could not determine home directory\n");

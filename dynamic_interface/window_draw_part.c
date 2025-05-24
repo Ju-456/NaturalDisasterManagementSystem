@@ -2,6 +2,7 @@
 #include "texture.h"
 #include "window_draw_part.h"
 #include "window_general_part.h"
+#include "raymath.h"
 
 void draw_roads_with_orientation(int num_vertices, Vertex vertices[], Road roads[], int num_roads) {
     for (int i = 0; i < num_vertices; i++) {
@@ -296,6 +297,41 @@ void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Verte
                 Vector2 start = { scaled_vertices[i].x, scaled_vertices[i].y };
                 Vector2 end = { scaled_vertices[j].x, scaled_vertices[j].y };
                 DrawLineEx(start, end, 2.0f, group_color); 
+            }
+        }
+    }
+}
+
+void DrawDashedLineEx(Vector2 start, Vector2 end, float thickness, float dashLength, Color color) {
+    Vector2 direction = Vector2Subtract(end, start);
+    float length = Vector2Length(direction);
+    direction = Vector2Normalize(direction);
+
+    float drawn = 0.0f;
+    bool draw = true;
+
+    while (drawn < length) {
+        float segmentLength = fminf(dashLength, length - drawn);
+        Vector2 segStart = Vector2Add(start, Vector2Scale(direction, drawn));
+        Vector2 segEnd = Vector2Add(segStart, Vector2Scale(direction, segmentLength));
+
+        if (draw) {
+            DrawLineEx(segStart, segEnd, thickness, color);
+        }
+
+        drawn += segmentLength;
+        draw = !draw;
+    }
+}
+
+void drawMinimalSpanningTree(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices, int roads[][MAX_VERTICES]) { 
+    for (int i = 0; i < num_vertices; i++) {
+        for (int j = 0; j < num_vertices; j++) {
+            if (roads[j][i] == 1){
+                Vector2 start = { vertices[i].x, vertices[i].y };
+                Vector2 end = { vertices[j].x, vertices[j].y };
+
+                DrawDashedLineEx(start, end, 3.0f, 10.0f, BLUE); // épaisseur = 3, tirets de 10 px
             }
         }
     }
