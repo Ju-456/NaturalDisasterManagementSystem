@@ -276,7 +276,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     Texture2D transition_texture = LoadTexture("Assets/transition_texture.png");
     AppMode mode = MODE_GRAPH;
 
-    // Values for the button
+    // Variables for buttons
     int selected_index = -1;
     bool menu_open = false;
     bool show_states = false;
