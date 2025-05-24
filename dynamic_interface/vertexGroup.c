@@ -2,7 +2,7 @@
 
 void init_matrix_1d_zero(int num_vertices, int mat_1d[MAX_VERTICES]) // initialiser le poids de la matrice 1d avec des 0
 {
-  printf("Initialization of the matrix (1d) with 0.\n");
+  //printf("Initialization of the matrix (1d) with 0.\n");
   for (int i = 0; i < num_vertices; i++)
   {
     mat_1d[i] = 0;
@@ -11,7 +11,7 @@ void init_matrix_1d_zero(int num_vertices, int mat_1d[MAX_VERTICES]) // initiali
 
 void init_matrix_2d_zero(int num_vertices, Road mat_2d[][MAX_VERTICES]) // initialiser le poids de la matrice 1d avec des 0
 {
-  printf("Initialization de la matrice (2d) with 0.\n");
+  //printf("Initialization de la matrice (2d) with 0.\n");
   for (int i = 0; i < num_vertices; i++)
   {
     for (int j = 0; j < num_vertices; j++)
@@ -76,11 +76,11 @@ void depth_first_search(int num_vertices, Road matrix[][MAX_VERTICES], int mat_v
   
   if (parent != -1) 
   {
-    printf("Arete of the tree : %d -> %d\n", parent, index);
+    //printf("Arete of the tree : %d -> %d\n", parent, index);
   } 
   else 
   {
-    printf("Root of the tree : %d\n", index);
+    //printf("Root of the tree : %d\n", index);
   }
 
   for (int i = 0; i < num_vertices; i++)
@@ -194,7 +194,7 @@ void depth_first_search_inverse(int num_vertices, Road matrix[][MAX_VERTICES], R
     for (int i = num_vertices - 1; i >= 0; i--) {
         int index = finishing_order[i];
         if (!visited[index]) {
-            printf("\nThe vertex's group %d contain the composante : ", cfc_group_id);
+            //printf("\nThe vertex's group %d contain the composante : ", cfc_group_id);
             dfs_cfc(num_vertices, matrix_inverse, visited, index, cfc_group_id, matrix);
             cfc_group_id++;
         }

@@ -58,7 +58,7 @@ int main() {
         inverse_matrix_1d_full(num_vertices, result, result_inverse);
         inverse_matrix_2d_full(num_vertices, matrix, matrix_inverse);
         depth_first_search_inverse(num_vertices, matrix, matrix_inverse, result_inverse);
-        read_matrix_2d_cfc(num_vertices, matrix);
+        // read_matrix_2d_cfc(num_vertices, matrix);
         
         int order_for_intervention = 1;
 

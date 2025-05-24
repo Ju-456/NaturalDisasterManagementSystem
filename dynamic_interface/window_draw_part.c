@@ -237,19 +237,29 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
 }
 
 void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices) {
-    // Étape 1 : Associer une couleur unique à chaque CFC group
+    int screen_width = GetScreenWidth();
+    int screen_height = GetScreenHeight();
+    float scale = fminf((float)screen_width / SCREEN_WIDTH, (float)screen_height / SCREEN_HEIGHT);
+    float offsetX = (screen_width - SCREEN_WIDTH * scale) / 2.0f;
+    float offsetY = (screen_height - SCREEN_HEIGHT * scale) / 2.0f;
+
+    Vertex scaled_vertices[num_vertices];
+    for (int i = 0; i < num_vertices; i++) {
+        scaled_vertices[i] = vertices[i];
+        scaled_vertices[i].x = vertices[i].x * scale + offsetX;
+        scaled_vertices[i].y = vertices[i].y * scale + offsetY;
+    }
+
     Color cfc_colors[MAX_VERTICES];
     for (int i = 0; i < MAX_VERTICES; i++) {
-        cfc_colors[i] = BLANK; // Couleur invalide comme indicateur non encore assigné
+        cfc_colors[i] = BLANK;
     }
 
     int num_assigned = 0;
 
-    // Étape 2 : Dessiner tous les sommets avec la couleur de leur CFC
     for (int i = 0; i < num_vertices; i++) {
         int group_id = matrix[i][i].cfc_group;
 
-        // Assigner une couleur si ce groupe n’en a pas encore
         if (cfc_colors[group_id].r == BLANK.r && cfc_colors[group_id].g == BLANK.g && cfc_colors[group_id].b == BLANK.b) {
             cfc_colors[group_id] = group_colors[num_assigned % (sizeof(group_colors) / sizeof(Color))];
             num_assigned++;
@@ -257,11 +267,10 @@ void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Verte
 
         Color group_color = cfc_colors[group_id];
 
-        DrawCircle(vertices[i].x, vertices[i].y, 5, group_color);
-        DrawText(TextFormat("%d", i), vertices[i].x + 10, vertices[i].y - 10, 12, BLACK);
+        DrawCircle(scaled_vertices[i].x, scaled_vertices[i].y, 5, group_color);
+        DrawText(TextFormat("%d", i), scaled_vertices[i].x + 10, scaled_vertices[i].y - 10, 12, BLACK);
     }
 
-    // Étape 3 : Dessiner les arêtes internes à une même CFC
     for (int i = 0; i < num_vertices; i++) {
         int group_i = matrix[i][i].cfc_group;
 
@@ -270,7 +279,10 @@ void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Verte
 
             if (group_i == group_j && matrix[i][j].weight > 0) {
                 Color group_color = cfc_colors[group_i];
-                DrawLine(vertices[i].x, vertices[i].y, vertices[j].x, vertices[j].y, group_color);
+
+                Vector2 start = { scaled_vertices[i].x, scaled_vertices[i].y };
+                Vector2 end = { scaled_vertices[j].x, scaled_vertices[j].y };
+                DrawLineEx(start, end, 2.0f, group_color); 
             }
         }
     }

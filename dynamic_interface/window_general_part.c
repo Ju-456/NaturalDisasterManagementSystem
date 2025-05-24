@@ -131,13 +131,15 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
     }
 }
 
-void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads, bool *show_group_vertices, Texture2D transition_texture, 
-    Texture2D grass_texture, const char *message, Road matrix[][MAX_VERTICES], int order_for_intervention) {
+void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *vertices, Road roads[], int num_roads, 
+    bool *show_group_vertices, Texture2D transition_texture, Texture2D grass_texture, const char *message, 
+    Road matrix[][MAX_VERTICES], int order_for_intervention) {
     
     Rectangle menu_button = { 10, 10, 30, 20 };
     static double timer = 0;
     static int current_intervention_index = 0; // to treat issue step by step
     static bool interventions_initialized = false;
+    static bool group_display_initialized = false;
 
     if (CheckCollisionPointRec(GetMousePosition(), menu_button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         *menu_open = !(*menu_open);
@@ -159,9 +161,9 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
     if (*menu_open) { // un button = 30 pixels of lenght and 
         Rectangle menu_rect = { menu_button.x, menu_button.y + 25, 165, 160 };
         DrawRectangleRec(menu_rect, LIGHTGRAY);
-        DrawText("earthquake", menu_rect.x + 25, menu_rect.y + 10, 12, BLACK);
-        DrawText("state's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
-        DrawText("intervention", menu_rect.x + 25, menu_rect.y + 70, 12, BLACK);
+        DrawText("Earthquake", menu_rect.x + 25, menu_rect.y + 10, 12, BLACK);
+        DrawText("State's roads", menu_rect.x + 25, menu_rect.y + 40, 12, BLACK);
+        DrawText("Intervention", menu_rect.x + 25, menu_rect.y + 70, 12, BLACK);
         DrawText("Group Accessible Areas", menu_rect.x + 25, menu_rect.y + 100, 12, BLACK);
         DrawText("Mission n*4 ", menu_rect.x + 25, menu_rect.y + 130, 12, BLACK); // to change 
 
@@ -177,7 +179,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
             earthquake(num_vertices, matrix, num_roads);
         }
 
-        // Show states
+        // Show state's roads
         if (CheckCollisionPointRec(GetMousePosition(), checkbox2) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             draw_state_for_existing_roads(num_vertices, vertices, matrix, roads, num_roads);
             *show_states = !(*show_states);
@@ -185,10 +187,11 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
 
         // Start interventions
         if (CheckCollisionPointRec(GetMousePosition(), checkbox3) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            transition_window(transition_texture, grass_texture, "Interventions will be made\nin the order of priority established");
+            transition_window(transition_texture, grass_texture, "Interventions will be \nmade in the order\nof priority established");
             init_city_need(num_vertices, matrix, vertices);
             init_type_of_issue(num_roads, matrix, vertices);        
-            init_travel_time(num_vertices, matrix);                 
+            init_travel_time(num_vertices, matrix);    
+                         
             display_info_travel(num_vertices, matrix, vertices, roads, num_roads);   
             travel_to_city(num_vertices, matrix, vertices, &order_for_intervention);
             update_closest_vertices(num_vertices, vertices);
@@ -198,25 +201,27 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         }
 
         // Group Accessible Areas
-        if (CheckCollisionPointRec(GetMousePosition(), checkbox4) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            *show_group_vertices = !(*show_group_vertices);  // toggle
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox4) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {  
+        *show_group_vertices = !(*show_group_vertices);
 
-            // Transition visuelle
-            transition_window(transition_texture, grass_texture, "These are the Summit Groups\nwith easy access ");
+        if (!group_display_initialized) {
+            //transition_window(transition_texture, grass_texture, "These are\nGroup Accessible Areas");
 
-            // Étape 1 : Calcul de l'ordre de fin de parcours
             int finishing_order[MAX_VERTICES];
             int pos = 0;
             left_right_root_full(num_vertices, matrix, finishing_order, &pos);
 
-            // Étape 2 : Inverser le graphe
             Road matrix_inverse[MAX_VERTICES][MAX_VERTICES];
             inverse_matrix_2d_full(num_vertices, matrix, matrix_inverse);
 
-            // Étape 3 : Détection des CFC (affecte matrix[i][i].cfc_group)
             depth_first_search_inverse(num_vertices, matrix, matrix_inverse, finishing_order);
 
-            // Étape 4 : Affichage
+            group_display_initialized = true;
+        }
+    }
+        
+        // Show Group Accessible Areas
+        if (*show_group_vertices) {
             draw_group_of_vertices(num_vertices, matrix, vertices);
         }
 
@@ -226,9 +231,7 @@ void button_click(bool *menu_open, bool *show_states, int num_vertices, Vertex *
         DrawRectangleRec(checkbox4, RAYWHITE);
         DrawRectangleRec(checkbox5, RAYWHITE);
 
-        DrawText("X", checkbox1.x + 2, checkbox1.y - 2, 14, GREEN);
         if (*show_states) DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
-        DrawText("X", checkbox3.x + 2, checkbox3.y - 2, 14, GREEN);
         if (*show_group_vertices) DrawText("X", checkbox4.x + 2, checkbox4.y - 2, 14, GREEN);
     }
 

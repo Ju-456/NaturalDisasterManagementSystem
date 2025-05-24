@@ -2,8 +2,8 @@
 #define GRAPH_H
 
 #define MAX_VERTICES 100
-#define FILENAME_TXT "graph3.txt"
-#define FILENAME_JSON "graph3.json"
+#define FILENAME_TXT "graphL1.txt"
+#define FILENAME_JSON "graphL1.json"
 #define INF INT_MAX
 
 #include <stdio.h>
