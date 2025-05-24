@@ -3,14 +3,21 @@
 #include "window_draw_part.h"
 #include "window_general_part.h"
 
-// Used  for txt and json
 void build_path(char *full_path, const char *base_path, const char *filename) {
-    const char *home = getenv("HOME");
-    if (home != NULL) {
-        snprintf(full_path, PATH_MAX, "%s/Bureau/NaturalDisasterManagementSystem/%s%s", home, base_path, filename);
-        printf("Full path: %s\n", full_path); // debug
+    char cwd[PATH_MAX];
+    
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        //printf("Current working directory: %s\n", cwd); 
+
+        char *last_slash = strrchr(cwd, '/');
+        if (last_slash != NULL) {
+            *last_slash = '\0'; 
+        }
+
+        snprintf(full_path, PATH_MAX, "%s/%s%s", cwd, base_path, filename);
+        printf("Full path: %s\n", full_path); 
     } else {
-        fprintf(stderr, "Could not determine home directory\n");
+        fprintf(stderr, "Could not get current working directory\n");
     }
 }
 
