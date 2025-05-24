@@ -170,18 +170,27 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
 
     double elapsed = GetTime() - start_time[index];
 
+    int screen_width = GetScreenWidth();
+    int screen_height = GetScreenHeight();
+    float scale = fminf((float)screen_width / SCREEN_WIDTH, (float)screen_height / SCREEN_HEIGHT);
+    float offsetX = (screen_width - SCREEN_WIDTH * scale) / 2.0f;
+    float offsetY = (screen_height - SCREEN_HEIGHT * scale) / 2.0f;
+
+    // The intervention's text is also adapted to the scale of the screen
     int text_width = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id), 18);
-    DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY);
-    DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY);
-    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id), 20, 20, 18, BLACK);
+    DrawRectangle(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, LIGHTGRAY);
+    DrawRectangleLines(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, DARKGRAY);
+    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id),
+             offsetX + 20 * scale, offsetY + 20 * scale, (int)(18 * scale), BLACK);
 
     Point route_points[MAX_VERTICES];
-    int point_count = build_path_points(num_vertices, vertices, index, closest_vertex, route_points, &point_count);
+    int point_count = 0;
+    build_path_points(num_vertices, vertices, index, closest_vertex, route_points, &point_count);
 
     if (point_count == 0) {
-        DrawRectangle(15, 15, text_width + 10, 25, LIGHTGRAY);
-        DrawRectangleLines(15, 15, text_width + 10, 25, DARKGRAY);
-        DrawText("Path doesn't exist", 20, 50, 18, ORANGE);
+        DrawRectangle(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, LIGHTGRAY);
+        DrawRectangleLines(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, DARKGRAY);
+        DrawText("Path doesn't exist", offsetX + 20 * scale, offsetY + 50 * scale, (int)(18 * scale), ORANGE);
         vertices[index].issue = 0;
         vertices[index].need = 0;
         animation_started[index] = false;
@@ -190,19 +199,18 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
 
     float total_duration = 3.0f;
     float step_spacing = 0.2f;
-
     bool reverse_animation = false;
 
-    if ((vertices[index].type == 1 || vertices[index].type == 2) && vertices[closest_vertex].type == 0) { //if h/w -> city
+    if ((vertices[index].type == 1 || vertices[index].type == 2) && vertices[closest_vertex].type == 0) {
         reverse_animation = true;
-    } else if (vertices[index].type == 0 && vertices[closest_vertex].type == 0) { // no display, this case shouldn't exist normally
+    } else if (vertices[index].type == 0 && vertices[closest_vertex].type == 0) {
         vertices[index].issue = 0;
         vertices[index].need = 0;
         animation_started[index] = false;
         return;
     }
 
-    // === Animation ===
+    // --- Animation ---
     if (elapsed < total_duration) {
         int steps = (int)(elapsed / step_spacing);
         for (int s = 0; s <= steps; s++) {
@@ -224,11 +232,16 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
                 y = route_points[k].y + f * (route_points[k + 1].y - route_points[k].y);
             }
 
-            DrawCircle(x, y, 4, ORANGE);
+            float scaled_x = x * scale + offsetX;
+            float scaled_y = y * scale + offsetY;
+
+            DrawCircle(scaled_x, scaled_y, 4 * scale, ORANGE);
         }
     } else if (elapsed < 6.0f) {
         Point last = reverse_animation ? route_points[0] : route_points[point_count - 1];
-        DrawCircle(last.x, last.y, 8, GREEN);
+        float scaled_x = last.x * scale + offsetX;
+        float scaled_y = last.y * scale + offsetY;
+        DrawCircle(scaled_x, scaled_y, 8 * scale, GREEN);
     } else {
         vertices[index].issue = 0;
         vertices[index].need = 0;
