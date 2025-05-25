@@ -132,7 +132,7 @@ void transition_window(Texture2D transition_texture, Texture2D grass_texture, co
 }
 
 void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_vertices, int num_vertices, Vertex *vertices, Road roads[], int num_roads, 
-                         Texture2D transition_texture, Texture2D grass_texture, Road matrix[][MAX_VERTICES], int *order_for_intervention, bool *showMinST) {
+                         Texture2D transition_texture, Texture2D grass_texture, Texture2D voitures, Road matrix[][MAX_VERTICES], int *order_for_intervention, bool *showMinST) {
 
     static int current_intervention_index = 0;
     static bool interventions_initialized = false;
@@ -220,7 +220,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
     if (interventions_initialized) {
             while (current_intervention_index < num_vertices) {
                 if (vertices[current_intervention_index].need == 1 && vertices[current_intervention_index].closest != -1) {
-                    draw_travel_effects(num_vertices, vertices, current_intervention_index);
+                    draw_travel_effects(num_vertices, vertices, current_intervention_index, voitures);
                     break; // one animation at a time per frame
                 }
                 current_intervention_index++;
@@ -278,6 +278,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
     road_texture = LoadTexture("Assets/City_Transparent.png");
     Texture2D grass_texture = LoadTexture("Assets/grass_retro1.png");
     Texture2D transition_texture = LoadTexture("Assets/transition_texture.png");
+    Texture2D voitures = LoadTexture("Assets/voitures1.png");
     AppMode mode = MODE_GRAPH;
 
     // Variables for buttons
@@ -295,7 +296,11 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         printf("Background texture loading error.\n");
         return;
     }
-    if (transition_texture.id == 0 || grass_texture.id == 0) {
+    if (voitures.id == 0) {
+        printf("Voiture texture loading error.\n");
+        return;
+    }
+    if (transition_texture.id == 0 || grass_texture.id == 0 || voitures.id == 0) {
         printf("Erreur de chargement de texture.\n");
         return;
     }
@@ -338,7 +343,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
 
         // execution of the logik's buttons
          buttons_click_logic(&menu_open, &show_states, &show_group_vertices, num_vertices, vertices, roads, num_roads,
-                        transition_texture, grass_texture, matrix, &order_for_intervention, &showMinST);
+                        transition_texture, grass_texture, voitures, matrix, &order_for_intervention, &showMinST);
         // draw the design of buttons
         buttons_click_draw(menu_open, show_states, show_group_vertices, num_vertices, vertices, matrix);
         if (show_states) {

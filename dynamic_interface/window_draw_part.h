@@ -15,7 +15,7 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
 
 // Travel's part
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
-void draw_travel_effects(int num_vertices, Vertex vertices[], int index);
+void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture2D voitures);
 // void draw_car_travel() to do
 
 // Group Acessible Areas's part

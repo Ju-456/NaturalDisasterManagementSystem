@@ -157,9 +157,9 @@ void draw_vertices_with_type(int num_vertices, Vertex *vertices) {
     }
 }
 
-void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
-    int closest_vertex = vertices[index].closest;
-    if (closest_vertex == -1 || vertices[index].need != 1) return;
+void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture2D voitures) {
+    int closest = vertices[index].closest;
+    if (closest == -1 || vertices[index].need != 1) return;
 
     static double start_time[MAX_VERTICES] = {0};
     static bool animation_started[MAX_VERTICES] = {false};
@@ -171,81 +171,211 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index) {
 
     double elapsed = GetTime() - start_time[index];
 
-    int screen_width = GetScreenWidth();
-    int screen_height = GetScreenHeight();
-    float scale = fminf((float)screen_width / SCREEN_WIDTH, (float)screen_height / SCREEN_HEIGHT);
-    float offsetX = (screen_width - SCREEN_WIDTH * scale) / 2.0f;
-    float offsetY = (screen_height - SCREEN_HEIGHT * scale) / 2.0f;
+    int text_w = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest].id), 18);
+    DrawRectangle(15, 15, text_w + 10, 25, LIGHTGRAY);
+    DrawRectangleLines(15, 15, text_w + 10, 25, DARKGRAY);
+    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest].id), 20, 20, 18, BLACK);
 
-    // The intervention's text is also adapted to the scale of the screen
-    int text_width = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id), 18);
-    DrawRectangle(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, LIGHTGRAY);
-    DrawRectangleLines(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, DARKGRAY);
-    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest_vertex].id),
-             offsetX + 20 * scale, offsetY + 20 * scale, (int)(18 * scale), BLACK);
-
-    Point route_points[MAX_VERTICES];
-    int point_count = 0;
-    build_path_points(num_vertices, vertices, index, closest_vertex, route_points, &point_count);
-
+    Point route[MAX_VERTICES];
+    int point_count = build_path_points(num_vertices, vertices, index, closest, route, &point_count);
     if (point_count == 0) {
-        DrawRectangle(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, LIGHTGRAY);
-        DrawRectangleLines(offsetX + 15 * scale, offsetY + 15 * scale, (text_width + 10) * scale, 25 * scale, DARKGRAY);
-        DrawText("Path doesn't exist", offsetX + 20 * scale, offsetY + 50 * scale, (int)(18 * scale), ORANGE);
-        vertices[index].issue = 0;
-        vertices[index].need = 0;
+        DrawText("Path doesn't exist", 20, 50, 18, ORANGE);
+        vertices[index].issue = vertices[index].need = 0;
         animation_started[index] = false;
         return;
     }
 
-    float total_duration = 3.0f;
-    float step_spacing = 0.2f;
-    bool reverse_animation = false;
+    bool reverse = (vertices[index].type == 1 || vertices[index].type == 2) && vertices[closest].type == 0;
 
-    if ((vertices[index].type == 1 || vertices[index].type == 2) && vertices[closest_vertex].type == 0) {
-        reverse_animation = true;
-    } else if (vertices[index].type == 0 && vertices[closest_vertex].type == 0) {
-        vertices[index].issue = 0;
-        vertices[index].need = 0;
+    if (vertices[index].type == 0 && vertices[closest].type == 0) {
+        vertices[index].issue = vertices[index].need = 0;
         animation_started[index] = false;
         return;
     }
 
-    // --- Animation ---
-    if (elapsed < total_duration) {
-        int steps = (int)(elapsed / step_spacing);
-        for (int s = 0; s <= steps; s++) {
-            float t = (s * step_spacing) / total_duration;
-            if (t > 1.0f) t = 1.0f;
+    Rectangle src;
+    bool rotate = false;
+    float angle = 0.0f;
 
-            float p = t * (point_count - 1);
-            int k = (int)p;
-            float f = p - k;
-            if (k >= point_count - 1) k = point_count - 2;
+    if (vertices[index].type == 0 && vertices[closest].type == 1)
+    {
+        if (vertices[index].x == vertices[closest].x)
+        {
+            if (vertices[index].y > vertices[closest].y)
+            {
+                src = (Rectangle){52, 81, 16, 38};
+            }
+            else if (vertices[index].y < vertices[closest].y)
+            {
+                src = (Rectangle){70, 81, 16, 38};
+            }
+        }
+        else if (vertices[index].y == vertices[closest].y)
+        {
+            if (vertices[index].x > vertices[closest].x)
+            {
+                src = (Rectangle){1, 103, 49, 18};
+            }
+            else if (vertices[index].x < vertices[closest].x)
+            {
+                src = (Rectangle){1, 83, 49, 18};
+            }
+        }
+        else
+        {
+            Point from = route[0];
+            Point to = route[1];
+            float dx = to.x - from.x;
+            float dy = to.y - from.y;
 
-            float x, y;
-
-            if (reverse_animation) {
-                x = route_points[point_count - 1 - k].x + f * (route_points[point_count - 2 - k].x - route_points[point_count - 1 - k].x);
-                y = route_points[point_count - 1 - k].y + f * (route_points[point_count - 2 - k].y - route_points[point_count - 1 - k].y);
+            if (fabsf(dy) > fabsf(dx)) {
+                // Mouvement plutôt vertical
+                if (vertices[index].type == 0 && vertices[closest].type == 1)
+                    src = (Rectangle){70, 81, 16, 38};  // bas
+                else if (vertices[index].type == 0 && vertices[closest].type == 2)
+                    src = (Rectangle){54, 121, 15, 38}; // bas
+                else
+                    src = (Rectangle){70, 81, 16, 38};  // fallback
             } else {
-                x = route_points[k].x + f * (route_points[k + 1].x - route_points[k].x);
-                y = route_points[k].y + f * (route_points[k + 1].y - route_points[k].y);
+                // Mouvement plutôt horizontal
+                if (vertices[index].type == 0 && vertices[closest].type == 1)
+                    src = (Rectangle){1, 83, 49, 18};  // droite
+                else if (vertices[index].type == 0 && vertices[closest].type == 2)
+                    src = (Rectangle){6, 123, 46, 17}; // droite
+                else
+                    src = (Rectangle){1, 83, 49, 18};  // fallback
             }
 
-            float scaled_x = x * scale + offsetX;
-            float scaled_y = y * scale + offsetY;
-
-            DrawCircle(scaled_x, scaled_y, 4 * scale, ORANGE);
+            rotate = true;
         }
-    } else if (elapsed < 6.0f) {
-        Point last = reverse_animation ? route_points[0] : route_points[point_count - 1];
-        float scaled_x = last.x * scale + offsetX;
-        float scaled_y = last.y * scale + offsetY;
-        DrawCircle(scaled_x, scaled_y, 8 * scale, GREEN);
-    } else {
-        vertices[index].issue = 0;
-        vertices[index].need = 0;
+    }
+    else if (vertices[index].type == 0 && vertices[closest].type == 2)
+    {
+        if (vertices[index].x == vertices[closest].x)
+        {
+            if (vertices[index].y > vertices[closest].y)
+            {
+                src = (Rectangle){71, 121, 15, 38};
+            }
+            else if (vertices[index].y < vertices[closest].y)
+            {
+                src = (Rectangle){54, 121, 15, 38};
+            }
+        }
+        else if (vertices[index].y == vertices[closest].y)
+        {
+            if (vertices[index].x > vertices[closest].x)
+            {
+                src = (Rectangle){6, 142, 46, 17};
+            }
+            else if (vertices[index].x < vertices[closest].x)
+            {
+                src = (Rectangle){6, 123, 46, 17};
+            }
+        }
+        else
+        {
+            Point from = route[0];
+            Point to = route[1];
+            float dx = to.x - from.x;
+            float dy = to.y - from.y;
+
+            if (fabsf(dy) > fabsf(dx)) {
+                // Mouvement plutôt vertical
+                if (vertices[index].type == 0 && vertices[closest].type == 1)
+                    src = (Rectangle){70, 81, 16, 38};  // bas
+                else if (vertices[index].type == 0 && vertices[closest].type == 2)
+                    src = (Rectangle){54, 121, 15, 38}; // bas
+                else
+                    src = (Rectangle){70, 81, 16, 38};  // fallback
+            } else {
+                // Mouvement plutôt horizontal
+                if (vertices[index].type == 0 && vertices[closest].type == 1)
+                    src = (Rectangle){1, 83, 49, 18};  // droite
+                else if (vertices[index].type == 0 && vertices[closest].type == 2)
+                    src = (Rectangle){6, 123, 46, 17}; // droite
+                else
+                    src = (Rectangle){1, 83, 49, 18};  // fallback
+            }
+
+            rotate = true;
+        }
+    }
+    else
+    {
+        Point from = route[0];
+        Point to = route[1];
+        float dx = to.x - from.x;
+        float dy = to.y - from.y;
+
+        if (fabsf(dy) > fabsf(dx)) {
+            // Mouvement plutôt vertical
+            if (vertices[index].type == 0 && vertices[closest].type == 1)
+                src = (Rectangle){70, 81, 16, 38};  // bas
+            else if (vertices[index].type == 0 && vertices[closest].type == 2)
+                src = (Rectangle){54, 121, 15, 38}; // bas
+            else
+                src = (Rectangle){70, 81, 16, 38};  // fallback
+        } else {
+            // Mouvement plutôt horizontal
+            if (vertices[index].type == 0 && vertices[closest].type == 1)
+                src = (Rectangle){1, 83, 49, 18};  // droite
+            else if (vertices[index].type == 0 && vertices[closest].type == 2)
+                src = (Rectangle){6, 123, 46, 17}; // droite
+            else
+                src = (Rectangle){1, 83, 49, 18};  // fallback
+        }
+
+        rotate = true;
+    }
+    float total_duration = 3.0f, scale = 1.0f;
+
+    if (elapsed < total_duration) {
+        float t = elapsed / total_duration;
+        if (t > 1.0f) t = 1.0f;
+
+        float p = t * (point_count - 1);
+        int k = (int)p;
+        float f = p - k;
+        if (k >= point_count - 1) k = point_count - 2;
+
+        Point a = reverse ? route[point_count - 1 - k] : route[k];
+        Point b = reverse ? route[point_count - 2 - k] : route[k + 1];
+
+        float x = a.x + f * (b.x - a.x);
+        float y = a.y + f * (b.y - a.y);
+
+        Rectangle dest = {x - src.width * scale / 2, y - src.height * scale / 2, src.width * scale, src.height * scale};
+
+        if (rotate) {
+            float dx = b.x - a.x;
+            float dy = b.y - a.y;
+            angle = atan2f(dy, dx) * (180.0f / PI);
+            DrawTexturePro(voitures, src, dest,
+                           (Vector2){src.width * scale / 2, src.height * scale / 2},
+                           angle, WHITE);
+        } else {
+            DrawTexturePro(voitures, src, dest, (Vector2){0, 0}, 0.0f, WHITE);
+        }
+    }
+    else if (elapsed < 6.0f) {
+        Point last = reverse ? route[0] : route[point_count - 1];
+        Rectangle dest = {last.x - src.width * scale / 2, last.y - src.height * scale / 2, src.width * scale, src.height * scale};
+
+        if (rotate) {
+            Point before_last = reverse ? route[1] : route[point_count - 2];
+            float dx = last.x - before_last.x;
+            float dy = last.y - before_last.y;
+            angle = atan2f(dy, dx) * (180.0f / PI);
+            DrawTexturePro(voitures, src, dest,
+                           (Vector2){src.width * scale / 2, src.height * scale / 2},
+                           angle, WHITE);
+        } else {
+            DrawTexturePro(voitures, src, dest, (Vector2){0, 0}, 0.0f, WHITE);
+        }
+    } 
+    else {
+        vertices[index].issue = vertices[index].need = 0;
         animation_started[index] = false;
     }
 }

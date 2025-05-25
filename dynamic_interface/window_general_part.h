@@ -13,7 +13,7 @@ bool are_connected(const char *id1, const char *id2, int num_roads, Road roads[]
 
 // Buttons's part
 void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_vertices, int num_vertices, Vertex *vertices, Road roads[], int num_roads, 
-                         Texture2D transition_texture, Texture2D grass_texture, Road matrix[][MAX_VERTICES], int *order_for_intervention, bool *showMinST);
+                         Texture2D transition_texture, Texture2D grass_texture, Texture2D voitures, Road matrix[][MAX_VERTICES], int *order_for_intervention, bool *showMinST);
 void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertices, int num_vertices, Vertex *vertices, Road matrix[][MAX_VERTICES]);
 
 void init_window_vertex(Vertex *vertices, Vertex *scaled_vertices, int num_vertices, AppMode *mode, int *selected_index);
