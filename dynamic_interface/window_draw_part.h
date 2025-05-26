@@ -16,7 +16,8 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
 // Travel's part
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
 void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture2D voitures);
-// void draw_car_travel() to do
+void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle src, Texture2D voitures, bool rotate, 
+    double elapsed, float scale, float offsetX, float offsetY);
 
 // Group Acessible Areas's part
 void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices);
