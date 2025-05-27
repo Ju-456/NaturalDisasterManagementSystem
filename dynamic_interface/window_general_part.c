@@ -164,7 +164,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
 
         // Earthquake
         if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            transition_window(transition_texture, grass_texture, "Be careful!\nThe earthquake is near...");
+            //transition_window(transition_texture, grass_texture, "Be careful!\nThe earthquake is near...");
             earthquake(num_vertices, matrix, num_roads);
         }
 
@@ -175,7 +175,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
 
         // Start interventions
         if (CheckCollisionPointRec(GetMousePosition(), checkbox3) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            transition_window(transition_texture, grass_texture, "Interventions will be \nmade in the order\nof priority established");
+            // transition_window(transition_texture, grass_texture, "Interventions will be \nmade in the order\nof priority established");
             init_city_need(num_vertices, matrix, vertices);
             init_type_of_issue(num_roads, matrix, vertices);
             init_travel_time(num_vertices, matrix);
@@ -340,7 +340,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
         
         draw_roads_with_orientation(num_vertices, scaled_vertices, roads, num_roads);
         draw_vertices_with_type(num_vertices, scaled_vertices);
-
+        
         // execution of the logik's buttons
          buttons_click_logic(&menu_open, &show_states, &show_group_vertices, num_vertices, vertices, roads, num_roads,
                         transition_texture, grass_texture, voitures, matrix, &order_for_intervention, &showMinST);

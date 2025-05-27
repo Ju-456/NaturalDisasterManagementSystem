@@ -199,115 +199,8 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture
         return;
     }
 
-    Rectangle src;
-    bool rotate = false;
-
-    if (vertices[index].type == 0 && vertices[closest].type == 1)
-    {
-        if (vertices[index].x == vertices[closest].x)
-        {
-            if (vertices[index].y > vertices[closest].y)
-            {
-                src = (Rectangle){52, 81, 16, 38};
-            }
-            else if (vertices[index].y < vertices[closest].y)
-            {
-                src = (Rectangle){70, 81, 16, 38};
-            }
-        }
-        else if (vertices[index].y == vertices[closest].y)
-        {
-            if (vertices[index].x > vertices[closest].x)
-            {
-                src = (Rectangle){1, 103, 49, 18};
-            }
-            else if (vertices[index].x < vertices[closest].x)
-            {
-                src = (Rectangle){1, 83, 49, 18};
-            }
-        }
-        else
-        {
-            Point from = route[0];
-            Point to = route[1];
-            float dx = to.x - from.x;
-            float dy = to.y - from.y;
-
-            if (fabsf(dy) > fabsf(dx)) {
-                // Mouvement plutôt vertical
-                if (vertices[index].type == 0 && vertices[closest].type == 1)
-                    src = (Rectangle){70, 81, 16, 38};  // bas
-                else if (vertices[index].type == 0 && vertices[closest].type == 2)
-                    src = (Rectangle){54, 121, 15, 38}; // bas
-                else
-                    src = (Rectangle){70, 81, 16, 38};  // fallback
-            } else {
-                // Mouvement plutôt horizontal
-                if (vertices[index].type == 0 && vertices[closest].type == 1)
-                    src = (Rectangle){1, 83, 49, 18};  // droite
-                else if (vertices[index].type == 0 && vertices[closest].type == 2)
-                    src = (Rectangle){6, 123, 46, 17}; // droite
-                else
-                    src = (Rectangle){1, 83, 49, 18};  // fallback
-            }
-
-            rotate = true;
-        }
-    }
-    else if (vertices[index].type == 0 && vertices[closest].type == 2)
-    {
-        if (vertices[index].x == vertices[closest].x)
-        {
-            if (vertices[index].y > vertices[closest].y)
-            {
-                src = (Rectangle){71, 121, 15, 38};
-            }
-            else if (vertices[index].y < vertices[closest].y)
-            {
-                src = (Rectangle){54, 121, 15, 38};
-            }
-        }
-        else if (vertices[index].y == vertices[closest].y)
-        {
-            if (vertices[index].x > vertices[closest].x)
-            {
-                src = (Rectangle){6, 142, 46, 17};
-            }
-            else if (vertices[index].x < vertices[closest].x)
-            {
-                src = (Rectangle){6, 123, 46, 17};
-            }
-        }
-        else
-        {
-            Point from = route[0];
-            Point to = route[1];
-            float dx = to.x - from.x;
-            float dy = to.y - from.y;
-
-            if (fabsf(dy) > fabsf(dx)) {
-                // Mouvement plutôt vertical
-                if (vertices[index].type == 0 && vertices[closest].type == 1)
-                    src = (Rectangle){70, 81, 16, 38};  // bas
-                else if (vertices[index].type == 0 && vertices[closest].type == 2)
-                    src = (Rectangle){54, 121, 15, 38}; // bas
-                else
-                    src = (Rectangle){70, 81, 16, 38};  // fallback
-            } else {
-                // Mouvement plutôt horizontal
-                if (vertices[index].type == 0 && vertices[closest].type == 1)
-                    src = (Rectangle){1, 83, 49, 18};  // droite
-                else if (vertices[index].type == 0 && vertices[closest].type == 2)
-                    src = (Rectangle){6, 123, 46, 17}; // droite
-                else
-                    src = (Rectangle){1, 83, 49, 18};  // fallback
-            }
-
-            rotate = true;
-        }
-    }
-    
-    draw_car_animation(route, point_count, reverse, src, voitures, rotate, elapsed, scale, offsetX, offsetY);
+    draw_car_animation(route, point_count, reverse, (Rectangle){0, 0, 0, 0},
+                   voitures, true, elapsed, scale, offsetX, offsetY, index, vertices);
 
     if (elapsed >= 6.0f) {
         vertices[index].issue = vertices[index].need = 0;
@@ -315,11 +208,67 @@ void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture
     }
 }
 
-void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle src, Texture2D voitures, bool rotate, 
-    double elapsed, float scale, float offsetX, float offsetY) {
+// Gestion of car's direction
+Rectangle get_blue_car_sprite(Direction dir) {
+    switch (dir) {        
+        case LEFT:  return (Rectangle){1, 103, 49, 18};   // ←
+        case RIGHT: return (Rectangle){1, 86, 49, 15};    // →
+
+        case DOWN:  return (Rectangle){53, 81, 14, 38};   // ↓
+        case UP:    return (Rectangle){70, 81, 15, 37};   // ↑
+        
+        default:    return (Rectangle){1, 86, 49, 15};    // fallback →
+    }
+}
+
+Rectangle get_green_car_sprite(Direction dir) {
+    switch (dir) {
+        case LEFT:  return (Rectangle){6, 123, 46, 17};   // ←
+        case RIGHT: return (Rectangle){6, 143, 46, 16};   // →
+
+        case DOWN:  return (Rectangle){54, 121, 15, 32};  // ↓
+        case UP:    return (Rectangle){71, 121, 15, 38};  // ↑
+
+        default:    return (Rectangle){6, 143, 46, 16};   // fallback →
+    }
+}
+
+Direction get_direction(float dx, float dy) {
+    float abs_dx = fabsf(dx);
+    float abs_dy = fabsf(dy);
+    float tolerance = 0.5f;
+
+    Direction dir;
+
+    if (abs_dx > abs_dy + tolerance) {
+        dir = (dx > 0) ? RIGHT : LEFT;
+    } else if (abs_dy > abs_dx + tolerance) {
+        dir = (dy > 0) ? DOWN : UP;
+    } else {
+        dir = (dy > 0) ? DOWN : UP;
+    }
+
+    printf("dx=%.2f dy=%.2f => direction=%s\n", dx, dy,
+           dir == UP ? "UP" : dir == DOWN ? "DOWN" : dir == LEFT ? "LEFT" : "RIGHT");
+
+    return dir;
+}
+
+// Choice of car's color
+Rectangle get_sprite_for_direction(Direction dir, int index, Vertex vertices[]) {
+    if (vertices[index].issue == 1) return get_blue_car_sprite(dir);
+    if (vertices[index].issue == 2) return get_green_car_sprite(dir);
+    return get_blue_car_sprite(dir); // fallback
+}
+
+void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle src_unused, Texture2D voitures,
+                        bool rotate, double elapsed, float scale, float offsetX, float offsetY,
+                        int index, Vertex vertices[]) {
+
     float total_duration = 3.0f;
     float vehicle_scale = 1.0f;
 
+    // Scale and offset each point on the path
     for (int i = 0; i < point_count; i++) {
         route[i].x = route[i].x * scale + offsetX;
         route[i].y = route[i].y * scale + offsetY;
@@ -337,29 +286,68 @@ void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle 
         Point a = reverse ? route[point_count - 1 - k] : route[k];
         Point b = reverse ? route[point_count - 2 - k] : route[k + 1];
 
-        float x = a.x + f * (b.x - a.x);
-        float y = a.y + f * (b.y - a.y);
+        float dx = b.x - a.x;
+        float dy = b.y - a.y;
+
+        Rectangle src;
         float angle = 0.0f;
-        
+
+        if (dx != 0 && dy != 0) {
+            Direction base_dir = (dx > 0) ? RIGHT : LEFT;
+            src = get_sprite_for_direction(base_dir, index, vertices);
+            angle = rotate ? ((dy < 0) ? 45.0f : -45.0f) : 0.0f;
+        } else {
+            Direction dir = get_direction(dx, dy);
+            src = get_sprite_for_direction(dir, index, vertices);
+
+            if (rotate) {
+                switch (dir) {
+                    case UP:    angle = -180.0f; break;
+                    case DOWN:  angle = 180.0f; break;
+                    default:    angle = atan2f(dy, dx) * RAD2DEG; break;
+                }
+            }
+        }
+
         Rectangle dest = {
-            x - src.width * vehicle_scale / 2,
-            y - src.height * vehicle_scale / 2,
+            a.x + f * dx - src.width * vehicle_scale / 2,
+            a.y + f * dy - src.height * vehicle_scale / 2,
             src.width * vehicle_scale,
             src.height * vehicle_scale
         };
 
-        if (rotate) {
-            float dx = b.x - a.x;
-            float dy = b.y - a.y;
-            angle = atan2f(dy, dx) * (180.0f / PI);
-        }
-
         DrawTexturePro(voitures, src, dest,
-                       (rotate ? (Vector2){src.width * vehicle_scale / 2, src.height * vehicle_scale / 2} : (Vector2){0, 0}),
-                       angle, WHITE);
+            (rotate ? (Vector2){src.width * vehicle_scale / 2, src.height * vehicle_scale / 2} : (Vector2){0, 0}),
+            angle, WHITE);
     }
+
     else if (elapsed < 6.0f) {
         Point last = reverse ? route[0] : route[point_count - 1];
+        Point before_last = reverse ? route[1] : route[point_count - 2];
+
+        float dx = last.x - before_last.x;
+        float dy = last.y - before_last.y;
+
+        Rectangle src;
+        float angle = 0.0f;
+
+        if (dx != 0 && dy != 0) {
+            Direction base_dir = (dx > 0) ? RIGHT : LEFT;
+            src = get_sprite_for_direction(base_dir, index, vertices);
+            angle = rotate ? ((dy < 0) ? 45.0f : -45.0f) : 0.0f;
+        } else {
+            Direction dir = get_direction(dx, dy);
+            src = get_sprite_for_direction(dir, index, vertices);
+
+            if (rotate) {
+                switch (dir) {
+                    case UP:    angle = -180.0f; break;
+                    case DOWN:  angle = 180.0f; break;
+                    default:    angle = atan2f(dy, dx) * RAD2DEG; break;
+                }
+            }
+        }
+
         Rectangle dest = {
             last.x - src.width * vehicle_scale / 2,
             last.y - src.height * vehicle_scale / 2,
@@ -367,17 +355,9 @@ void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle 
             src.height * vehicle_scale
         };
 
-        float angle = 0.0f;
-        if (rotate) {
-            Point before_last = reverse ? route[1] : route[point_count - 2];
-            float dx = last.x - before_last.x;
-            float dy = last.y - before_last.y;
-            angle = atan2f(dy, dx) * (180.0f / PI);
-        }
-
         DrawTexturePro(voitures, src, dest,
-                       (rotate ? (Vector2){src.width * vehicle_scale / 2, src.height * vehicle_scale / 2} : (Vector2){0, 0}),
-                       angle, WHITE);
+            (rotate ? (Vector2){src.width * vehicle_scale / 2, src.height * vehicle_scale / 2} : (Vector2){0, 0}),
+            angle, WHITE);
     }
 }
 
