@@ -25,17 +25,13 @@ void draw_state_for_existing_roads(int num_vertices, Vertex vertices[], Road mat
 
 // Travel's part
 void draw_vertices_with_type(int num_vertices, Vertex *vertices);
-void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture2D voitures);
-
 Direction get_direction(float dx, float dy);
 Rectangle get_blue_car_sprite(Direction dir);
 Rectangle get_green_car_sprite(Direction dir);
 Rectangle get_sprite_for_direction(Direction dir, int index, Vertex vertices[]);
+void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture2D voitures);
 void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle src_unused, Texture2D voitures,
                         bool rotate, double elapsed, float scale, float offsetX, float offsetY,int index, Vertex vertices[]);
-                        
-// void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle src, Texture2D voitures, bool rotate, 
-//     double elapsed, float scale, float offsetX, float offsetY);
 
 // Group Acessible Areas's part
 void draw_group_of_vertices(int num_vertices, Road matrix[][MAX_VERTICES], Vertex *vertices);

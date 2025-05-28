@@ -157,57 +157,6 @@ void draw_vertices_with_type(int num_vertices, Vertex *vertices) {
     }
 }
 
-void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture2D voitures) {
-    int closest = vertices[index].closest;
-    if (closest == -1 || vertices[index].need != 1) return;
-
-    int screen_width = GetScreenWidth();
-    int screen_height = GetScreenHeight();
-    float scale = fminf((float)screen_width / SCREEN_WIDTH, (float)screen_height / SCREEN_HEIGHT);
-    float offsetX = (screen_width - SCREEN_WIDTH * scale) / 2.0f;
-    float offsetY = (screen_height - SCREEN_HEIGHT * scale) / 2.0f;
-
-    static double start_time[MAX_VERTICES] = {0};
-    static bool animation_started[MAX_VERTICES] = {false};
-
-    if (!animation_started[index]) {
-        start_time[index] = GetTime();
-        animation_started[index] = true;
-    }
-
-    double elapsed = GetTime() - start_time[index];
-
-    int text_w = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest].id), 18);
-    DrawRectangle(15, 15, text_w + 10, 25, LIGHTGRAY);
-    DrawRectangleLines(15, 15, text_w + 10, 25, DARKGRAY);
-    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest].id), 20, 20, 18, BLACK);
-
-    Point route[MAX_VERTICES];
-    int point_count = build_path_points(num_vertices, vertices, index, closest, route, &point_count);
-    if (point_count == 0) {
-        DrawText("Path doesn't exist", 20, 50, 18, ORANGE);
-        vertices[index].issue = vertices[index].need = 0;
-        animation_started[index] = false;
-        return;
-    }
-
-    bool reverse = (vertices[index].type == 1 || vertices[index].type == 2) && vertices[closest].type == 0;
-
-    if (vertices[index].type == 0 && vertices[closest].type == 0) {
-        vertices[index].issue = vertices[index].need = 0;
-        animation_started[index] = false;
-        return;
-    }
-
-    draw_car_animation(route, point_count, reverse, (Rectangle){0, 0, 0, 0},
-                   voitures, true, elapsed, scale, offsetX, offsetY, index, vertices);
-
-    if (elapsed >= 6.0f) {
-        vertices[index].issue = vertices[index].need = 0;
-        animation_started[index] = false;
-    }
-}
-
 // Gestion of car's direction
 Rectangle get_blue_car_sprite(Direction dir) {
     switch (dir) {        
@@ -259,6 +208,57 @@ Rectangle get_sprite_for_direction(Direction dir, int index, Vertex vertices[]) 
     if (vertices[index].issue == 1) return get_blue_car_sprite(dir);
     if (vertices[index].issue == 2) return get_green_car_sprite(dir);
     return get_blue_car_sprite(dir); // fallback
+}
+
+void draw_travel_effects(int num_vertices, Vertex vertices[], int index, Texture2D voitures) {
+    int closest = vertices[index].closest;
+    if (closest == -1 || vertices[index].need != 1) return;
+
+    int screen_width = GetScreenWidth();
+    int screen_height = GetScreenHeight();
+    float scale = fminf((float)screen_width / SCREEN_WIDTH, (float)screen_height / SCREEN_HEIGHT);
+    float offsetX = (screen_width - SCREEN_WIDTH * scale) / 2.0f;
+    float offsetY = (screen_height - SCREEN_HEIGHT * scale) / 2.0f;
+
+    static double start_time[MAX_VERTICES] = {0};
+    static bool animation_started[MAX_VERTICES] = {false};
+
+    if (!animation_started[index]) {
+        start_time[index] = GetTime();
+        animation_started[index] = true;
+    }
+
+    double elapsed = GetTime() - start_time[index];
+
+    int text_w = MeasureText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest].id), 18);
+    DrawRectangle(15, 15, text_w + 10, 25, LIGHTGRAY);
+    DrawRectangleLines(15, 15, text_w + 10, 25, DARKGRAY);
+    DrawText(TextFormat("Intervention: %s -> %s", vertices[index].id, vertices[closest].id), 20, 20, 18, BLACK);
+
+    Point route[MAX_VERTICES];
+    int point_count = build_path_points(num_vertices, vertices, index, closest, route, &point_count);
+    if (point_count == 0) {
+        DrawText("Path doesn't exist", 20, 50, 18, ORANGE);
+        vertices[index].issue = vertices[index].need = 0;
+        animation_started[index] = false;
+        return;
+    }
+
+    bool reverse = (vertices[index].type == 1 || vertices[index].type == 2) && vertices[closest].type == 0;
+
+    if (vertices[index].type == 0 && vertices[closest].type == 0) {
+        vertices[index].issue = vertices[index].need = 0;
+        animation_started[index] = false;
+        return;
+    }
+
+    draw_car_animation(route, point_count, reverse, (Rectangle){0, 0, 0, 0},
+                   voitures, true, elapsed, scale, offsetX, offsetY, index, vertices);
+
+    if (elapsed >= 6.0f) {
+        vertices[index].issue = vertices[index].need = 0;
+        animation_started[index] = false;
+    }
 }
 
 void draw_car_animation(Point route[], int point_count, bool reverse, Rectangle src_unused, Texture2D voitures,
