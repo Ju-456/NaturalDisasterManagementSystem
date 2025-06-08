@@ -214,6 +214,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
             int minST[MAX_VERTICES][MAX_VERTICES];
             edmonds(matrix, vertices, num_vertices, minST);
             draw_min_spanning_tree(num_vertices, matrix, vertices, minST);
+            showMinST = false;
         }
     }
 
@@ -231,7 +232,7 @@ void buttons_click_logic(bool *menu_open, bool *show_states, bool *show_group_ve
     }
 }
 
-void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertices, int num_vertices, Vertex *vertices, Road matrix[][MAX_VERTICES]) {
+void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertices,bool showMinST, int num_vertices, Vertex *vertices, Road matrix[][MAX_VERTICES]) {
     Rectangle menu_button = { 10, 10, 30, 20 };
 
     // The 3 black points button
@@ -256,15 +257,16 @@ void buttons_click_draw(bool menu_open, bool show_states, bool show_group_vertic
         Rectangle checkbox4 = { menu_rect.x + 5, menu_rect.y + 100, 14, 14 };
         Rectangle checkbox5 = { menu_rect.x + 5, menu_rect.y + 130, 14, 14 };
 
-        DrawRectangleRec(checkbox1, RAYWHITE);
+        DrawRectangleRec(checkbox1, GRAY);
         DrawRectangleRec(checkbox2, RAYWHITE);
-        DrawRectangleRec(checkbox3, RAYWHITE);
+        DrawRectangleRec(checkbox3, GRAY);
         DrawRectangleRec(checkbox4, RAYWHITE);
         DrawRectangleRec(checkbox5, RAYWHITE);
 
         // if X (true) else (no green X)
         if (show_states) DrawText("X", checkbox2.x + 2, checkbox2.y - 2, 14, GREEN);
         if (show_group_vertices) DrawText("X", checkbox4.x + 2, checkbox4.y - 2, 14, GREEN);
+        if (showMinST) DrawText("X", checkbox5.x + 2, checkbox5.y - 2, 14, GREEN);
 
     }
 }
@@ -345,7 +347,7 @@ void init_window_custom(const char *filename, int num_vertices, Vertex *vertices
          buttons_click_logic(&menu_open, &show_states, &show_group_vertices, num_vertices, vertices, roads, num_roads,
                         transition_texture, grass_texture, voitures, matrix, &order_for_intervention, &showMinST);
         // draw the design of buttons
-        buttons_click_draw(menu_open, show_states, show_group_vertices, num_vertices, vertices, matrix);
+        buttons_click_draw(menu_open, show_states, show_group_vertices, showMinST, num_vertices, vertices, matrix);
         if (show_states) {
             draw_state_for_existing_roads(num_vertices, scaled_vertices, matrix, roads, num_roads);
         }
