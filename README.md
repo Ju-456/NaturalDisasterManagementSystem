@@ -121,10 +121,13 @@ Change these filenames to use a different graph file from the **Graph\_json/** o
 ---
 
 ### 🔘 UI Buttons (Top-left corner, 3 dots)
-![image](https://github.com/user-attachments/assets/6f34b819-97e0-4b6a-b814-4d63fc1a486c) ![image](https://github.com/user-attachments/assets/0733d84d-bbe5-4f68-8caf-d9dc7112cd50)
+![image](https://github.com/user-attachments/assets/56d8a6e0-c801-40e8-a6f3-a51e97b12be4) ![image](https://github.com/user-attachments/assets/e5d2e99c-896e-4f10-9d36-73bff0674eb4) ![image](https://github.com/user-attachments/assets/e13be998-d8d9-4f06-b42e-cc0618ac84e0)
 
-If the **H icon is green**, it means the corresponding option is currently **enabled and visible** in the interface.
+If the **H icon is green**, it means the corresponding option is currently **enabled and visible** in the interface. White buttons are graphic display controls, while gray ones (like the earthquake button) trigger animations or actions.
+> 📌 Note: About the white buttons — they are independent. You can select 2 or 3 at the same time, as shown in image 2.
 
+---
+## 🖱️ The Button Features
 
 | Feature | Description |
 |--------|-------------|
